@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-export default function Navbar({ currentPath, navigate }) {
+export default function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -22,8 +25,7 @@ export default function Navbar({ currentPath, navigate }) {
     { path: '/gallery', label: 'Gallery' }
   ];
 
-  // Dynamically choose the style based on the page
-  const isHome = currentPath === '/';
+  const isHome = location.pathname === '/';
 
   return (
     <header className={isHome ? 'home-navbar' : 'subpage-header'}>
@@ -41,7 +43,7 @@ export default function Navbar({ currentPath, navigate }) {
                 e.preventDefault();
                 navigate(link.path);
               }}
-              className={currentPath === link.path ? 'active' : ''}
+              className={location.pathname === link.path ? 'active' : ''}
             >
               {link.label}
             </a>
