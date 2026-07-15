@@ -1,24 +1,29 @@
 import express from 'express';
 import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
 import authRoutes from './src/routes/authRoutes.js';
+import hotelRoutes from './src/routes/hotelRoutes.js';
 
-dotenv.config();
 const app = express();
 
-// Middleware
-app.use(express.json());
-app.use(cookieParser());
+// LOGGING MIDDLEWARE - Add this to see what is happening in your terminal
+app.use((req, res, next) => {
+    console.log(`[DEBUG] Received ${req.method} request at ${req.url}`);
+    next();
+});
+
+// CORS MIDDLEWARE
 app.use(cors({
-    origin: 'http://localhost:5173', // Must match your Vite frontend exactly
-    credentials: true                // Allows the server to send cookies
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Explicitly include OPTIONS
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
 
-// Routes
-app.use('/api/auth', authRoutes);
+app.use(express.json());
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Backend server running on http://localhost:${PORT}`);
-});
+// ROUTES
+app.use('/api/auth', authRoutes);
+app.use('/api/hotels', hotelRoutes);
+
+const PORT = process.env.PORT || 5050;
+app.listen(PORT, () => console.log(`🚀 Backend running on http://localhost:${PORT}`));

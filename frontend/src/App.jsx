@@ -1,29 +1,31 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Booking from './pages/Booking';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Vault from './pages/Vault';
 import Itinerary from './pages/Itinerary';
 import Gallery from './pages/Gallery';
+import Booking from './pages/Booking';
+import Vault from './pages/Vault';
+import Signup from './pages/Signup';
+import AdminDashboard from './pages/AdminDashboard';
 import './App.css';
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="app-container">
+      <div className="root-layout">
         <Navbar />
         
-        <div className="page-wrapper">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/booking" element={<Booking />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/itinerary" element={<Itinerary />} />
-            <Route path="/vault" element={<Vault />} />
-            <Route path="/gallery" element={<Gallery />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/booking" element={<Booking />} />
+          <Route path="/itinerary" element={<Itinerary />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/vault" element={<Vault />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+        </Routes>
       </div>
     </BrowserRouter>
   );

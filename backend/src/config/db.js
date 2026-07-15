@@ -5,12 +5,15 @@ dotenv.config();
 
 const { Pool } = pg;
 
-// This connects directly to your Supabase database using your connection string
+// We now pass an object with the individual pieces instead of connectionString
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    host: process.env.PGHOST,
+    port: process.env.PGPORT,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
 });
 
-// Test the connection
 pool.connect()
     .then(() => console.log('Successfully connected to Supabase PostgreSQL'))
     .catch((err) => console.error('Database connection error:', err));

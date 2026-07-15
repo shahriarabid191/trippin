@@ -1,12 +1,12 @@
 import express from 'express';
-import { loginUser } from '../controllers/authController.js';
+import { loginUser, registerUser } from '../controllers/authController.js'; // <-- Add curly braces here!
 
 const router = express.Router();
 
 // POST /api/auth/login
 router.post('/login', loginUser);
 
-// You will eventually add a register route here!
-// router.post('/register', registerUser);
+// POST /api/auth/register
+router.post('/register', registerUser);
 
 export default router;
