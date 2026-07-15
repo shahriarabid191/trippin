@@ -46,3 +46,4 @@ lerna-debug.log*
 *.swp
 .DS_Store
 Thumbs.db
+frontend/src/oldApp.jsx
