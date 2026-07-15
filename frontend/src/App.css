@@ -19,15 +19,39 @@ body {
 }
 
 /* ==========================================================================
-   Global Navbar (Replaces all previous navbars)
+   Structural Layout Wrapper
    ========================================================================== */
-.global-navbar {
+.root-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+
+.page {
+  color: #1b1f25;
+  flex-grow: 1;
+}
+
+/* ==========================================================================
+   Dynamic Navbar Styles (Home vs Subpage)
+   ========================================================================== */
+.home-navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 24px 48px;
+  z-index: 100;
+}
+
+.subpage-header {
   background-color: #0b1e30;
   padding: 0 48px;
   height: 68px;
   position: sticky;
   top: 0;
-  z-index: 9999; /* Ensure it stays above everything */
+  z-index: 100;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
   display: flex;
   align-items: center;
@@ -129,22 +153,9 @@ body {
 }
 
 /* ==========================================================================
-   Page Layouts
+   Full-Bleed Responsive Iframe Windows
    ========================================================================== */
-.app-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.page-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Iframe adjustments (Total height minus 68px navbar) */
-.iframe-container {
+.iframe-page-container {
   width: 100vw;
   height: calc(100vh - 68px); 
   overflow: hidden;
@@ -152,7 +163,7 @@ body {
   padding: 0;
 }
 
-.iframe-container iframe {
+.iframe-page-container iframe {
   width: 100%;
   height: 100%;
   border: none;
@@ -160,39 +171,102 @@ body {
 }
 
 /* ==========================================================================
-   Home Page Styles
+   Hero Block
    ========================================================================== */
 .hero {
   position: relative;
-  min-height: 600px; /* Reduced since nav is extracted */
+  min-height: 760px;
   padding: 24px 48px 30px;
-  background: center / cover no-repeat url('https://images.unsplash.com/photo-1596633608169-0d6b8f9f5d77?auto=format&fit=crop&w=1800&q=80');
+  background: center / cover no-repeat
+    url('https://images.unsplash.com/photo-1596633608169-0d6b8f9f5d77?auto=format&fit=crop&w=1800&q=80');
 }
 
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(3, 38, 64, 0.55) 20%, rgba(247, 249, 251, 0.9) 100%);
+  background: linear-gradient(180deg, rgba(3, 38, 64, 0.55) 20%, rgba(4, 30, 53, 0.15) 60%, rgba(247, 249, 251, 0.9) 100%);
+}
+
+.hero-title-wrap,
+.preview-strip {
+  position: relative;
+  z-index: 1;
 }
 
 .hero-title-wrap {
-  position: relative;
-  z-index: 1;
   text-align: center;
-  margin-top: 100px;
+  margin-top: 150px; /* Increased to account for the absolute navbar */
+}
+
+.map-overlay {
+  display: none;
 }
 
 .hero h1 {
   display: none;
 }
 
+/* ==========================================================================
+   Preview Cards Strip
+   ========================================================================== */
 .preview-strip {
-  position: relative;
-  z-index: 1;
   margin-top: 56px;
   display: flex;
   align-items: flex-end;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.preview-cards {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+}
+
+.preview-card {
+  position: relative;
+  flex: 0 0 136px;
+  height: 190px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #d9eaf7;
+}
+
+.preview-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 35%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+.preview-card p {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  font-size: 12px;
+  color: #fff;
+  margin: 0;
+}
+
+.text-card {
+  display: grid;
+  place-content: center;
+  height: 100%;
+  color: #0c2135;
+  text-align: center;
+  font-weight: 700;
+}
+
+.text-card span {
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 6px;
 }
 
 .book-main-btn {
@@ -204,28 +278,249 @@ body {
   font-weight: 700;
   letter-spacing: 0.1em;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.content {
-  background: #f7f9fb;
-  padding: 44px 48px 64px;
 }
 
 /* ==========================================================================
-   Subpage Content Styles
+   Content Sections Layouts
+   ========================================================================== */
+.content {
+  background: #f7f9fb;
+  margin-top: -2px;
+  padding: 44px 48px 64px;
+}
+
+.about h2,
+.included h2 {
+  font-size: clamp(30px, 4vw, 44px);
+  margin: 0 0 28px;
+  letter-spacing: 0.08em;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 40px;
+}
+
+.about-text {
+  color: #4f5c69;
+  line-height: 1.8;
+  display: grid;
+  gap: 22px;
+}
+
+.about-text span {
+  color: #0f6fb5;
+}
+
+/* Timeline Layout */
+.timeline {
+  position: relative;
+  display: grid;
+  gap: 28px;
+  padding-left: 34px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 10px;
+  width: 2px;
+  background: #0d79bd;
+}
+
+.timeline-item {
+  position: relative;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -30px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #0d79bd;
+}
+
+.days {
+  display: inline-block;
+  text-transform: uppercase;
+  color: #0c78ba;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.timeline-item h3 {
+  margin: 6px 0 10px;
+  font-size: 34px;
+  line-height: 1.1;
+}
+
+.timeline-images {
+  display: flex;
+  gap: 8px;
+}
+
+.timeline-images img {
+  width: 86px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* What's Included */
+.included {
+  margin-top: 54px;
+}
+
+.include-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.include-card {
+  border: 1px solid #b7d7ef;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fff;
+}
+
+.include-card h3 {
+  margin: 0 0 10px;
+}
+
+.include-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #4f5c69;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   Global Footer Layouts
+   ========================================================================== */
+.footer {
+  position: relative;
+  min-height: 520px;
+  padding: 44px 48px 24px;
+  background: center / cover no-repeat
+    url('https://images.unsplash.com/photo-1473773508845-188df298d2d1?auto=format&fit=crop&w=1800&q=80');
+}
+
+.footer-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11, 39, 62, 0.22), rgba(8, 21, 36, 0.78));
+}
+
+.contact-card,
+.footer-bottom {
+  position: relative;
+  z-index: 1;
+}
+
+.contact-card {
+  width: min(100%, 330px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  padding: 24px;
+}
+
+.contact-card h3 {
+  margin: 0;
+  font-size: 36px;
+}
+
+.contact-card p {
+  opacity: 0.9;
+}
+
+.contact-card form {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.contact-card input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+  color: #fff;
+  padding: 10px 2px;
+}
+
+.contact-card input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.contact-card button {
+  margin-top: 8px;
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 18px;
+  background: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.footer-bottom {
+  margin-top: 150px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  padding-top: 14px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+
+.footer-links a {
+  color: inherit;
+  text-decoration: none;
+  font-size: 15px;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+
+.footer-links a:hover {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Shared Native Subpage Wrappers
    ========================================================================== */
 .subpage-content {
   padding: 60px 48px;
   max-width: 1200px;
   margin: 0 auto;
-  flex: 1; /* Pushes footer down */
+  min-height: 65vh;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .subpage-content h2 {
   font-size: clamp(32px, 4.5vw, 48px);
   color: #0c2135;
   margin: 0 0 10px;
+  letter-spacing: -0.02em;
 }
 
 .subpage-subtitle {
@@ -234,7 +529,7 @@ body {
   margin-bottom: 40px;
 }
 
-/* Itinerary Grid */
+/* Itinerary Subpage Layouts */
 .itinerary-details-grid {
   display: grid;
   gap: 32px;
@@ -249,10 +544,22 @@ body {
   grid-template-columns: 1.1fr 0.9fr;
   gap: 32px;
   box-shadow: 0 4px 20px rgba(12, 33, 53, 0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.days-badge {
+.itinerary-detail-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(12, 33, 53, 0.06);
+}
+
+.itinerary-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.itinerary-info .days-badge {
   display: inline-block;
+  align-self: flex-start;
   background: #e3f2fd;
   color: #0d79bd;
   font-weight: 700;
@@ -261,13 +568,69 @@ body {
   border-radius: 999px;
   text-transform: uppercase;
   margin-bottom: 12px;
+  letter-spacing: 0.05em;
 }
 
-/* Gallery Grid */
+.itinerary-info h3 {
+  font-size: 32px;
+  margin: 0 0 16px;
+  color: #0c2135;
+}
+
+.itinerary-info p {
+  color: #4f5c69;
+  line-height: 1.7;
+  font-size: 16px;
+  margin: 0 0 20px;
+}
+
+.itinerary-info h4 {
+  font-size: 15px;
+  text-transform: uppercase;
+  color: #0d79bd;
+  letter-spacing: 0.05em;
+  margin: 0 0 10px;
+}
+
+.itinerary-info ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.itinerary-info li {
+  margin-bottom: 8px;
+  color: #4f5c69;
+  line-height: 1.5;
+}
+
+.itinerary-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  height: 100%;
+}
+
+.itinerary-images-grid img {
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s;
+}
+
+.itinerary-images-grid img:hover {
+  transform: scale(1.02);
+}
+
+/* Gallery Subpage Layouts */
 .gallery-filter-tabs {
   display: flex;
   gap: 12px;
   margin-bottom: 32px;
+  overflow-x: auto;
+  padding-bottom: 8px;
 }
 
 .gallery-tab-btn {
@@ -278,12 +641,21 @@ body {
   padding: 10px 24px;
   cursor: pointer;
   font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.gallery-tab-btn:hover {
+  border-color: #0d79bd;
+  color: #0d79bd;
 }
 
 .gallery-tab-btn.active {
   background: #0d79bd;
   color: #fff;
   border-color: #0d79bd;
+  box-shadow: 0 4px 10px rgba(13, 121, 189, 0.2);
 }
 
 .gallery-photo-grid {
@@ -297,12 +669,19 @@ body {
   border-radius: 16px;
   overflow: hidden;
   height: 280px;
+  box-shadow: 0 4px 20px rgba(12, 33, 53, 0.05);
+  cursor: pointer;
 }
 
 .gallery-photo-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-photo-card:hover img {
+  transform: scale(1.06);
 }
 
 .gallery-photo-info {
@@ -313,35 +692,80 @@ body {
   padding: 24px;
   background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 100%);
   color: #fff;
+  transition: transform 0.3s;
 }
 
-/* Footer */
-.footer {
-  position: relative;
-  background: center / cover no-repeat url('https://images.unsplash.com/photo-1473773508845-188df298d2d1?auto=format&fit=crop&w=1800&q=80');
+.gallery-photo-info h4 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.footer-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(11, 39, 62, 0.22), rgba(8, 21, 36, 0.78));
+.gallery-photo-info p {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.85;
 }
 
-.footer-bottom {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #fff;
+/* ==========================================================================
+   Media Breakpoints Matrix
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .hero,
+  .content,
+  .footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .home-navbar {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .subpage-header {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .hero-title-wrap {
+    margin-top: 48px;
+  }
+
+  .preview-strip {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-item h3 {
+    font-size: 26px;
+  }
+
+  .include-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer-bottom {
+    margin-top: 76px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
-.footer-links {
-  display: flex;
-  gap: 24px;
+@media (max-width: 820px) {
+  .itinerary-detail-card {
+    grid-template-columns: 1fr;
+    padding: 24px;
+    gap: 24px;
+  }
 }
 
-.footer-links a {
-  color: #fff;
-  text-decoration: none;
+@media (max-width: 620px) {
+  .include-grid {
+    grid-template-columns: 1fr;
+  }
 }
