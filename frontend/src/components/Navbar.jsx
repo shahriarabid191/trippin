@@ -49,18 +49,20 @@ export default function Navbar({ currentPath, navigate }) {
         </div>
 
         <div className="nav-icons">
-          <button className="nav-icon-btn" title="Notifications">🔔</button>
+          <button className="nav-icon-btn" title="Notifications">
+            <span className="material-symbols-outlined">notifications</span>
+          </button>
           <div style={{ position: 'relative' }} ref={profileRef}>
             <button className="nav-icon-btn" title="Profile" onClick={() => setProfileOpen(o => !o)}>
-              👤
+              <span className="material-symbols-outlined">account_circle</span>
             </button>
             {profileOpen && (
               <div className="profile-dropdown">
                 <button className="profile-dropdown-item" onClick={() => { navigate('/vault'); setProfileOpen(false); }}>
-                  <span className="pd-icon">🔒</span> My Vault
+                  <span className="material-symbols-outlined pd-icon" style={{fontSize: '20px', marginRight: '8px'}}>lock</span> My Vault
                 </button>
                 <button className="profile-dropdown-item" onClick={() => { navigate('/gallery'); setProfileOpen(false); }}>
-                  <span className="pd-icon">🖼️</span> My Gallery
+                  <span className="material-symbols-outlined pd-icon" style={{fontSize: '20px', marginRight: '8px'}}>image</span> My Gallery
                 </button>
               </div>
             )}
