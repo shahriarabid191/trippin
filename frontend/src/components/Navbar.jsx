@@ -22,8 +22,11 @@ export default function Navbar({ currentPath, navigate }) {
     { path: '/gallery', label: 'Gallery' }
   ];
 
+  // Dynamically choose the style based on the page
+  const isHome = currentPath === '/';
+
   return (
-    <header className="global-navbar">
+    <header className={isHome ? 'home-navbar' : 'subpage-header'}>
       <nav className="top-nav">
         <div className="brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
           ◉ TRIPPIN
