@@ -42,3 +42,50 @@ export const loginUser = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
+// POST /api/auth/register
+export const registerUser = async (req, res) => {
+    const { email, password, adminCode } = req.body;
+
+    try {
+        // 1. Check if user already exists
+        const userExists = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        if (userExists.rows.length > 0) {
+            return res.status(400).json({ error: 'Email is already registered' });
+        }
+
+        // 2. Securely hash the password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // 3. Check for Admin Code (Change this secret code in production!)
+        const role = adminCode === 'TRIPPIN_ADMIN_2026' ? 'admin' : 'user';
+
+        // 4. Save to Database
+        const newUser = await pool.query(
+            'INSERT INTO users (email, password_hash, role) VALUES ($1, $2, $3) RETURNING id, email, role',
+            [email, hashedPassword, role]
+        );
+
+        const user = newUser.rows[0];
+
+        // 5. Issue JWT Cookie so they are instantly logged in
+        const token = jwt.sign(
+            { id: user.id, email: user.email, role: user.role },
+            process.env.JWT_SECRET || 'super_secret_fallback_key',
+            { expiresIn: '1d' }
+        );
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+            maxAge: 24 * 60 * 60 * 1000
+        });
+
+        res.status(201).json({ message: 'User registered', user: { email: user.email, role: user.role } });
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ error: 'Server error during registration' });
+    }
+};
