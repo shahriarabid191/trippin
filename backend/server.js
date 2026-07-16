@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import authRoutes from './src/routes/authRoutes.js';
 import hotelRoutes from './src/routes/hotelRoutes.js';
+import bookingRoutes from './src/routes/bookingRoutes.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(express.json());
 // ROUTES
 app.use('/api/auth', authRoutes);
 app.use('/api/hotels', hotelRoutes);
+app.use('/api/booking', bookingRoutes);
 
 const PORT = process.env.PORT || 5050;
 app.listen(PORT, () => console.log(`🚀 Backend running on http://localhost:${PORT}`));

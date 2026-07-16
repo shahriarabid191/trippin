@@ -1,3 +1,9 @@
-const bookingRoutes = {};
+import express from 'express';
+import { getHotels } from '../controllers/hotelController.js';
 
-module.exports = bookingRoutes;
+const router = express.Router();
+
+// GET: Fetch all hotels for the Booking page
+router.get('/', getHotels);
+
+export default router;
