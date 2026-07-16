@@ -3,7 +3,7 @@ import { getHotels, addHotel } from '../controllers/hotelController.js';
 
 const router = express.Router();
 
-router.get('/', getHotels);
-router.post('/', addHotel); // Later we will add an auth middleware here to ensure only admins can POST
+router.get('/', getHotels); // Handles GET http://localhost:5050/api/hotels
+router.post('/', addHotel); // Handles POST http://localhost:5050/api/hotels
 
 export default router;
