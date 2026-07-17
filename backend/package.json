@@ -2,10 +2,10 @@
   "name": "trippin-backend",
   "version": "1.0.0",
   "description": "Backend API for Trippin",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
