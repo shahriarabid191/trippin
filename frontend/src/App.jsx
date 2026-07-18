@@ -8,6 +8,8 @@ import Booking from './pages/Booking';
 import Vault from './pages/Vault';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
+import TodoList from "./pages/Todolist";
+import Journal from "./pages/Journal";
 import './App.css';
 
 function App() {
@@ -24,7 +26,9 @@ function App() {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/vault" element={<Vault />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+         <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/todos" element={<TodoList/>} />
+          <Route path="/journal" element={<Journal/>} />
         </Routes>
       </div>
     </BrowserRouter>
