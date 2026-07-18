@@ -1,15 +1,15 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext'; // Import your auth state
+import { AuthContext } from '../context/AuthContext';
 
 export default function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Pull the current user and logout function from Context
-  const { user, logout } = useContext(AuthContext); 
+  const { user, logout } = useContext(AuthContext);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -36,7 +36,7 @@ export default function Navbar() {
         <div className="brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
           ◉ TRIPPIN
         </div>
-        
+
         <div className="menu-links">
           {navLinks.map((link) => (
             <a
@@ -57,13 +57,13 @@ export default function Navbar() {
           {/* Conditional Rendering: Logged In vs Logged Out */}
           {!user ? (
             <>
-              <button 
+              <button
                 onClick={() => navigate('/login')}
                 style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '15px' }}
               >
                 Login
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/signup')}
                 style={{ background: '#fff', color: '#0b1e30', border: 'none', padding: '8px 20px', borderRadius: '999px', cursor: 'pointer', fontWeight: 700, fontSize: '14px' }}
               >
@@ -79,30 +79,37 @@ export default function Navbar() {
                 <button className="nav-icon-btn" title="Profile" onClick={() => setProfileOpen(o => !o)}>
                   <span className="material-symbols-outlined">account_circle</span>
                 </button>
-                
+
                 {profileOpen && (
                   <div className="profile-dropdown">
                     {/* Admin Only Link */}
                     {user.role === 'admin' && (
                       <>
                         <button className="profile-dropdown-item" onClick={() => { navigate('/admin'); setProfileOpen(false); }}>
-                          <span className="material-symbols-outlined pd-icon" style={{fontSize: '20px', marginRight: '8px', color: '#ba1a1a'}}>admin_panel_settings</span> Admin Dashboard
+                          <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px', color: '#ba1a1a' }}>admin_panel_settings</span> Admin Dashboard
                         </button>
                         <div className="profile-dropdown-divider" />
                       </>
                     )}
+                    <button className="profile-dropdown-item" onClick={() => { navigate('/todos'); setProfileOpen(false); }}>
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>checklist</span> My Todo List
+                    </button>
                     
                     <button className="profile-dropdown-item" onClick={() => { navigate('/vault'); setProfileOpen(false); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{fontSize: '20px', marginRight: '8px'}}>lock</span> My Vault
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>lock</span> My Vault
                     </button>
                     <button className="profile-dropdown-item" onClick={() => { navigate('/gallery'); setProfileOpen(false); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{fontSize: '20px', marginRight: '8px'}}>image</span> My Gallery
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>image</span> My Gallery
                     </button>
-                    
+
                     <div className="profile-dropdown-divider" />
-                    
-                    <button className="profile-dropdown-item" onClick={() => { logout(); setProfileOpen(false); navigate('/'); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{fontSize: '20px', marginRight: '8px', color: '#4f5c69'}}>logout</span> Logout
+
+                    <button className="profile-dropdown-item" onClick={async () => {
+                      await logout();
+                      setProfileOpen(false);
+                      navigate('/');
+                    }}>
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px', color: '#4f5c69' }}>logout</span> Logout
                     </button>
                   </div>
                 )}
