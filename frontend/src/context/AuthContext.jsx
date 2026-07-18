@@ -3,31 +3,95 @@ import { createContext, useState, useEffect } from 'react';
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
 
-  // When the app first loads, check if we saved user data in local storage
-  // (The actual secure token lives invisibly in the browser's cookies)
-  useEffect(() => {
-    const savedUser = localStorage.getItem('trippinUser');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+
+    useEffect(() => {
+
+        async function checkAuth() {
+
+            try {
+
+                const response = await fetch(
+                    "http://localhost:5050/api/auth/me",
+                    {
+                        method: "GET",
+                        credentials: "include"
+                    }
+                );
+
+
+                const data = await response.json();
+
+
+                if (response.ok && data.user) {
+                    setUser(data.user);
+                }
+                else {
+                    setUser(null);
+                }
+
+
+            } catch (error) {
+
+                console.error("Authentication check failed:", error);
+                setUser(null);
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        }
+
+
+        checkAuth();
+
+    }, []);
+
+
+
+    function login(userData) {
+
+        setUser(userData);
+
     }
-  }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem('trippinUser', JSON.stringify(userData));
-  };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('trippinUser');
-    // In the future, you'd also make a quick fetch to /api/auth/logout to destroy the cookie
-  };
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    async function logout() {
+
+        try {
+
+            await fetch(
+                "http://localhost:5050/api/auth/logout",
+                {
+                    method: "POST",
+                    credentials: "include"
+                }
+            );
+
+
+        } catch (error) {
+
+            console.error("Logout failed:", error);
+
+        }
+
+
+        setUser(null);
+
+    }
+
+
+
+    return (
+        <AuthContext.Provider value={{ user, login, logout, loading }}>
+            {children}
+        </AuthContext.Provider>
+    );
+
 }
