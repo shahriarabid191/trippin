@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import ChatWidget from './components/ChatWidget';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Itinerary from './pages/Itinerary';
@@ -28,6 +29,8 @@ function App() {
           <Route path="/signup" element={<Signup />} />
          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
+
+        <ChatWidget />
       </div>
     </BrowserRouter>
   );
