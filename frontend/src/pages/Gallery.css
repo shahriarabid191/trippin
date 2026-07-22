@@ -1,0 +1,390 @@
+/* ==========================================================================
+   Public Gallery — flat, full-page draggable photo wall + photo modal
+   theme: navy #0b1e30/#0c2135, accent #0d79bd, light blue #b7d7ef/#e3f2fd
+   ========================================================================== */
+
+.gallery-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 68px);
+  overflow: hidden;
+}
+
+.gallery-topbar {
+  padding: 18px 48px;
+  background: #f7f9fb;
+  border-bottom: 1px solid #e3f2fd;
+  flex-shrink: 0;
+}
+
+.gallery-topbar h2 {
+  margin: 0;
+  font-size: clamp(24px, 3vw, 34px);
+  color: #0c2135;
+  letter-spacing: -0.02em;
+}
+
+.gallery-topbar p {
+  margin: 4px 0 0;
+  color: #4f5c69;
+  font-size: 15px;
+}
+
+/* ---------- Loading / empty ---------- */
+.gallery-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: #4f5c69;
+  text-align: center;
+}
+
+.gallery-empty .material-symbols-outlined {
+  font-size: 56px;
+  color: #b7d7ef;
+}
+
+.gallery-empty h3 {
+  margin: 0;
+  color: #0c2135;
+  font-size: 22px;
+}
+
+.gallery-empty p {
+  margin: 0;
+}
+
+.gallery-add-cta {
+  margin-top: 8px;
+  border: 0;
+  background: #0b1e30;
+  color: #fff;
+  border-radius: 999px;
+  padding: 12px 28px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.gallery-add-cta:hover {
+  background: #0d79bd;
+}
+
+.gallery-spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid #e3f2fd;
+  border-top-color: #0d79bd;
+  animation: gallery-spin 0.9s linear infinite;
+}
+
+@keyframes gallery-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Flat draggable photo wall ---------- */
+.photowall-viewport {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: #0b1e30;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  scrollbar-width: thin;
+  scrollbar-color: #2f4a63 transparent;
+}
+
+.photowall-viewport.grabbing {
+  cursor: grabbing;
+}
+
+.photowall-viewport::-webkit-scrollbar {
+  height: 10px;
+}
+
+.photowall-viewport::-webkit-scrollbar-thumb {
+  background: #2f4a63;
+  border-radius: 999px;
+}
+
+.photowall-viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.photowall {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(3, 1fr);
+  grid-auto-columns: 300px;
+  gap: 14px;
+  padding: 18px;
+  height: 100%;
+  box-sizing: border-box;
+  width: max-content;
+}
+
+.photowall-tile {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #12304a;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s;
+}
+
+.photowall-tile:hover {
+  transform: translateY(-3px);
+}
+
+.photowall-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.photowall-tile-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 14px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 45%, rgba(8, 21, 36, 0.85) 100%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.photowall-tile:hover .photowall-tile-overlay {
+  opacity: 1;
+}
+
+.photowall-tile-caption {
+  margin: 0 0 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.photowall-tile-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.photowall-tile-user {
+  color: #b7d7ef;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.photowall-tile-likes {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.photowall-tile-likes .material-symbols-outlined {
+  font-size: 17px;
+  color: #e0245e;
+}
+
+@media (max-height: 640px) {
+  .photowall {
+    grid-template-rows: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .gallery-topbar {
+    padding: 14px 20px;
+  }
+
+  .photowall {
+    grid-auto-columns: 240px;
+  }
+}
+
+/* ==========================================================================
+   Photo modal (caption + uploader + heart)
+   ========================================================================== */
+.gphoto-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(8, 21, 36, 0.72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: gphoto-fade 0.2s ease-out;
+}
+
+@keyframes gphoto-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gphoto-card {
+  position: relative;
+  width: min(100%, 440px);
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: gphoto-pop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes gphoto-pop {
+  from { transform: translateY(12px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.gphoto-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(11, 30, 48, 0.55);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.gphoto-close:hover {
+  background: rgba(11, 30, 48, 0.85);
+}
+
+.gphoto-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #0b1e30;
+}
+
+.gphoto-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gphoto-body {
+  padding: 20px 22px 24px;
+}
+
+.gphoto-caption {
+  margin: 0 0 16px;
+  font-size: 17px;
+  line-height: 1.5;
+  color: #0c2135;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.gphoto-nocaption {
+  color: #8da2b5;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.gphoto-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid #e3f2fd;
+}
+
+.gphoto-uploader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4f5c69;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.gphoto-uploader .material-symbols-outlined {
+  font-size: 22px;
+  color: #0d79bd;
+}
+
+.gphoto-like {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gphoto-like-count {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0c2135;
+  min-width: 16px;
+  text-align: right;
+}
+
+.gphoto-heart {
+  border: none;
+  background: #f7f9fb;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.gphoto-heart:hover:not(:disabled) {
+  background: #ffe3ea;
+  transform: scale(1.08);
+}
+
+.gphoto-heart:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.gphoto-heart .material-symbols-outlined {
+  font-size: 26px;
+  color: #8da2b5;
+  transition: color 0.2s;
+}
+
+.gphoto-heart.liked .material-symbols-outlined {
+  color: #e0245e;
+}
+
+.gphoto-error {
+  margin: 12px 0 0;
+  color: #ba1a1a;
+  font-size: 13px;
+}
