@@ -1,0 +1,401 @@
+/* ==========================================================================
+   Itinerary Builder — shared theme: navy #0b1e30/#0c2135, accent #0d79bd,
+   light blue #b7d7ef/#e3f2fd, background #f7f9fb, muted text #4f5c69
+   ========================================================================== */
+
+.itinerary-builder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.itinerary-checking {
+  width: 100%;
+  min-height: 40vh;
+}
+
+/* ---------- Intro ---------- */
+.itinerary-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 80px 0 40px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.itinerary-hero-text {
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800;
+  color: #0c2135;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.itinerary-hero-subtitle {
+  margin-top: 24px;
+  color: #4f5c69;
+  font-size: 18px;
+  line-height: 1.6;
+  max-width: 560px;
+}
+
+.itinerary-cta-btn {
+  margin-top: 36px;
+  border: 0;
+  background: #0b1e30;
+  color: #fff;
+  border-radius: 999px;
+  padding: 16px 44px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.itinerary-cta-btn:hover {
+  background: #0d79bd;
+  transform: translateY(-2px);
+}
+
+/* ---------- Quiz ---------- */
+.itinerary-quiz {
+  width: 100%;
+  max-width: 760px;
+  margin: 20px auto 0;
+  padding: 40px;
+  background: #fff;
+  border: 1px solid #b7d7ef;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(12, 33, 53, 0.06);
+}
+
+.quiz-progress {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.quiz-progress-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: #e3f2fd;
+  overflow: hidden;
+}
+
+.quiz-progress-fill {
+  height: 100%;
+  background: #0d79bd;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.quiz-step-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0d79bd;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.quiz-question {
+  font-size: clamp(22px, 3vw, 30px);
+  color: #0c2135;
+  margin: 0 0 28px;
+}
+
+.quiz-error {
+  color: #ba1a1a;
+  font-size: 14px;
+  margin: 16px 0 0;
+}
+
+.quiz-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 36px;
+}
+
+.quiz-back-btn {
+  border: 1px solid #b7d7ef;
+  background: #fff;
+  color: #4f5c69;
+  border-radius: 999px;
+  padding: 13px 28px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.quiz-back-btn:hover {
+  border-color: #0d79bd;
+  color: #0d79bd;
+}
+
+.quiz-next-btn {
+  border: 0;
+  background: #0b1e30;
+  color: #fff;
+  border-radius: 999px;
+  padding: 13px 32px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.quiz-next-btn:hover:not(:disabled) {
+  background: #0d79bd;
+}
+
+.quiz-next-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------- Loading ---------- */
+.itinerary-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 40vh;
+  color: #4f5c69;
+  font-weight: 600;
+}
+
+.itinerary-loading-spinner {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 4px solid #e3f2fd;
+  border-top-color: #0d79bd;
+  animation: itinerary-spin 0.9s linear infinite;
+}
+
+@keyframes itinerary-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Result: A4-style sheet ---------- */
+.itinerary-result {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.itinerary-a4-sheet {
+  width: 100%;
+  max-width: 800px;
+  background: #fff;
+  border: 1px solid #b7d7ef;
+  border-radius: 16px;
+  padding: 56px;
+  box-shadow: 0 8px 40px rgba(12, 33, 53, 0.08);
+}
+
+.a4-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.a4-eyebrow {
+  display: block;
+  font-size: 20px;
+  font-style: italic;
+  color: #0d79bd;
+  font-weight: 600;
+}
+
+.a4-header h1 {
+  margin: 4px 0 0;
+  font-size: clamp(34px, 5vw, 48px);
+  letter-spacing: 0.06em;
+  color: #0c2135;
+  text-transform: uppercase;
+}
+
+.a4-fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px 40px;
+  padding-bottom: 28px;
+  margin-bottom: 36px;
+  border-bottom: 2px solid #0c2135;
+}
+
+.a4-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.a4-field span {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #4f5c69;
+}
+
+.a4-field strong {
+  font-size: 16px;
+  color: #0c2135;
+}
+
+.a4-day-block {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 28px;
+  margin-bottom: 40px;
+}
+
+.a4-day-block:last-child {
+  margin-bottom: 0;
+}
+
+.a4-day-image {
+  width: 100%;
+  height: 200px;
+  border-radius: 50% / 30%;
+  overflow: hidden;
+  border: 3px solid #e3f2fd;
+}
+
+.a4-day-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.a4-day-content h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  letter-spacing: 0.03em;
+  color: #0c2135;
+  text-transform: uppercase;
+}
+
+.a4-day-summary {
+  margin: 0 0 16px;
+  color: #4f5c69;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.a4-slot {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.a4-slot-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0d79bd;
+  letter-spacing: 0.04em;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.a4-slot-label small {
+  font-weight: 500;
+  color: #4f5c69;
+  font-size: 11px;
+}
+
+.a4-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0d79bd;
+  margin-bottom: 4px;
+}
+
+.a4-slot ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #1b1f25;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.a4-slot li {
+  margin-bottom: 4px;
+}
+
+.itinerary-result-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.itinerary-discard-btn,
+.itinerary-save-btn {
+  border-radius: 999px;
+  padding: 14px 36px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.itinerary-discard-btn {
+  border: 1px solid #b7d7ef;
+  background: #fff;
+  color: #4f5c69;
+}
+
+.itinerary-discard-btn:hover:not(:disabled) {
+  border-color: #ba1a1a;
+  color: #ba1a1a;
+}
+
+.itinerary-save-btn {
+  border: 0;
+  background: #0b1e30;
+  color: #fff;
+}
+
+.itinerary-save-btn:hover:not(:disabled) {
+  background: #0d79bd;
+}
+
+.itinerary-discard-btn:disabled,
+.itinerary-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 700px) {
+  .itinerary-a4-sheet {
+    padding: 32px 24px;
+  }
+
+  .a4-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .a4-day-block {
+    grid-template-columns: 1fr;
+  }
+
+  .a4-day-image {
+    height: 220px;
+    border-radius: 16px;
+  }
+
+  .a4-slot {
+    grid-template-columns: 1fr;
+  }
+}
