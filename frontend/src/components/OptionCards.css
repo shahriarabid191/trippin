@@ -1,0 +1,40 @@
+.option-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.option-card {
+  cursor: pointer;
+  background: #fff;
+  border: 2px solid #b7d7ef;
+  border-radius: 14px;
+  padding: 22px 20px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-shadow: 0 4px 16px rgba(12, 33, 53, 0.04);
+}
+
+.option-card:hover {
+  border-color: #0d79bd;
+  box-shadow: 0 8px 24px rgba(12, 33, 53, 0.08);
+}
+
+.option-card-selected {
+  background: #0b1e30;
+  border-color: #0d79bd;
+  box-shadow: 0 8px 24px rgba(13, 121, 189, 0.25);
+}
+
+.option-card-text {
+  margin: 0;
+  color: #0c2135;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+  transition: color 0.2s;
+}
+
+.option-card-selected .option-card-text {
+  color: #fff;
+}
