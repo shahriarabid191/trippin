@@ -10,6 +10,7 @@ import bookingRoutes from './routes/bookingRoutes.js';
 import vaultRoutes from "./routes/vaultRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import journalRoutes from "./routes/journalRoutes.js";
+import budgetRoutes from "./routes/budgetRoutes.js";
 import path from "path";
 
 
@@ -37,10 +38,10 @@ app.use(cors({
 
 
 // BODY PARSER
-app.use(express.json()); 
+app.use(express.json());
 
 // COOKIE PARSER
-app.use(cookieParser()); 
+app.use(cookieParser());
 
 // ROUTES
 app.use('/api/auth', authRoutes);
@@ -50,6 +51,7 @@ app.use("/api/todos", todoRoutes);
 app.use("/api/vault", vaultRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/journals", journalRoutes);
+app.use("/api/budgets", budgetRoutes);
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-export default app;
+export default app; 

@@ -11,6 +11,7 @@ import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
 import TodoList from "./pages/Todolist";
 import Journal from "./pages/Journal";
+import BudgetTracker from "./pages/BudgetTracker";
 import './App.css';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="/vault" element={<Vault />} />
           <Route path="/todos" element={<TodoList />} />
           <Route path="/journal" element={<Journal />} />
+          <Route path="/budget" element={<BudgetTracker />} />
           <Route path="/signup" element={<Signup />} />
          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
@@ -38,4 +40,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;  
