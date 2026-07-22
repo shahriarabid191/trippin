@@ -14,7 +14,6 @@ import TodoList from "./pages/Todolist";
 import MyGallery from './pages/MyGallery';
 import Journal from "./pages/Journal";
 import BudgetTracker from "./pages/BudgetTracker";
-import MyGallery from './pages/MyGallery';
 import './App.css';
 
 function App() {

@@ -119,6 +119,12 @@ export default function HotelDetails() {
               <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>location_on</span>
               {hotel.location}
             </div>
+            {hotel.total_rooms != null && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#4f5c69', fontSize: '15px', marginTop: '6px' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>meeting_room</span>
+                {hotel.total_rooms} rooms · pick your dates to see live availability
+              </div>
+            )}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
               <StarRow value={Math.round(avgRating)} size={18} />
               <span style={{ color: '#4f5c69', fontSize: '14px' }}>
