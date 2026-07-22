@@ -25,8 +25,9 @@ export default function Navbar() {
     { path: '/booking', label: 'Booking' },
     { path: '/itinerary', label: 'Itinerary' },
     { path: '/vault', label: 'Vault' },
-    { path: '/gallery', label: 'Gallery' }
-  ];
+    { path: '/gallery', label: 'Gallery' },
+    { path: '/journal', label: 'Journal' }
+  ]; 
 
   const isHome = location.pathname === '/';
 
@@ -100,6 +101,10 @@ export default function Navbar() {
                     </button>
                     <button className="profile-dropdown-item" onClick={() => { navigate('/my-gallery'); setProfileOpen(false); }}>
                       <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>image</span> My Gallery
+                    </button>
+
+                    <button className="profile-dropdown-item" onClick={() => { navigate('/journal'); setProfileOpen(false); }}>
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>menu_book</span> My Journal
                     </button>
 
                     <div className="profile-dropdown-divider" />

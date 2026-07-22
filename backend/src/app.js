@@ -13,6 +13,7 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import itineraryRoutes from "./routes/itineraryRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
+import journalRoutes from "./routes/journalRoutes.js";
 import path from "path";
 
 
@@ -40,10 +41,10 @@ app.use(cors({
 
 
 // BODY PARSER
-app.use(express.json());
+app.use(express.json()); 
 
 // COOKIE PARSER
-app.use(cookieParser());
+app.use(cookieParser()); 
 
 // ROUTES
 app.use('/api/auth', authRoutes);
@@ -56,6 +57,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/itinerary", itineraryRoutes);
 app.use("/api/gallery", galleryRoutes);
+app.use("/api/journals", journalRoutes);
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 export default app;
