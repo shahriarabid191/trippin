@@ -187,7 +187,7 @@ body {
   min-height: 760px;
   padding: 24px 48px 30px;
   background: center / cover no-repeat
-    url('https://images.unsplash.com/photo-1596633608169-0d6b8f9f5d77?auto=format&fit=crop&w=1800&q=80');
+    url('https://images.unsplash.com/photo-1471922694854-ff1b63b20054?auto=format&fit=crop&w=1800&q=80');
 }
 
 .hero-overlay {
@@ -205,10 +205,6 @@ body {
 .hero-title-wrap {
   text-align: center;
   margin-top: 150px; /* Increased to account for the absolute navbar */
-}
-
-.map-overlay {
-  display: none;
 }
 
 .hero h1 {

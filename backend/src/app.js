@@ -9,6 +9,8 @@ import hotelRoutes from './routes/hotelRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import vaultRoutes from "./routes/vaultRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 import path from "path";
 
 
@@ -48,6 +50,8 @@ app.use('/api/booking', bookingRoutes);
 app.use("/api/todos", todoRoutes);
 app.use("/api/vault", vaultRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 export default app;
