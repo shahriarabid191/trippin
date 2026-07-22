@@ -25,9 +25,8 @@ export default function Navbar() {
     { path: '/booking', label: 'Booking' },
     { path: '/itinerary', label: 'Itinerary' },
     { path: '/vault', label: 'Vault' },
-    { path: '/gallery', label: 'Gallery' },
-    { path: '/journal', label: 'Journal' }
-  ]; 
+    { path: '/gallery', label: 'Gallery' }
+  ];
 
   const isHome = location.pathname === '/';
 
@@ -95,16 +94,20 @@ export default function Navbar() {
                     <button className="profile-dropdown-item" onClick={() => { navigate('/todos'); setProfileOpen(false); }}>
                       <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>checklist</span> My Todo List
                     </button>
-                    
+
                     <button className="profile-dropdown-item" onClick={() => { navigate('/vault'); setProfileOpen(false); }}>
                       <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>lock</span> My Vault
                     </button>
-                    <button className="profile-dropdown-item" onClick={() => { navigate('/my-gallery'); setProfileOpen(false); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>image</span> My Gallery
+                    <button className="profile-dropdown-item" onClick={() => { navigate('/budget'); setProfileOpen(false); }}>
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>account_balance_wallet</span> My Budget
                     </button>
-
                     <button className="profile-dropdown-item" onClick={() => { navigate('/journal'); setProfileOpen(false); }}>
                       <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>menu_book</span> My Journal
+                    </button>
+
+                    <button className="profile-dropdown-item" onClick={() => { navigate('/my-gallery'); setProfileOpen(false); }}>
+
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>image</span> My Gallery
                     </button>
 
                     <div className="profile-dropdown-divider" />
