@@ -6,12 +6,14 @@ import Login from './pages/Login';
 import Itinerary from './pages/Itinerary';
 import Gallery from './pages/Gallery';
 import Booking from './pages/Booking';
+import HotelDetails from './pages/HotelDetails';
 import Vault from './pages/Vault';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
 import TodoList from "./pages/Todolist";
 import Journal from "./pages/Journal";
 import BudgetTracker from "./pages/BudgetTracker";
+import MyGallery from './pages/MyGallery';
 import './App.css';
 
 function App() {
@@ -24,8 +26,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/hotels/:id" element={<HotelDetails />} />
           <Route path="/itinerary" element={<Itinerary />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/my-gallery" element={<MyGallery />} />
           <Route path="/vault" element={<Vault />} />
           <Route path="/todos" element={<TodoList />} />
           <Route path="/journal" element={<Journal />} />
