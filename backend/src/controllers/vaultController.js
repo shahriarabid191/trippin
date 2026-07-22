@@ -1,5 +1,4 @@
 import * as Vault from "../models/vaultModel.js";
-
 import fs from "fs";
 
 
@@ -8,8 +7,7 @@ export const getFilesByUserID = async (req, res) => {
 
     try {
 
-        let files = await Vault.getUserFiles(req.user.id);
-
+        const files = await Vault.getUserFiles(req.user.id);
 
         const validFiles = [];
 
@@ -23,7 +21,7 @@ export const getFilesByUserID = async (req, res) => {
             } 
             else {
 
-                // remove orphan database record
+                // remove orphan database entry
                 await Vault.deleteFile(
                     file.id,
                     req.user.id
@@ -39,7 +37,7 @@ export const getFilesByUserID = async (req, res) => {
 
     } catch (error) {
 
-        console.log(error);
+        console.error(error);
 
         res.status(500).json({
             message: "Server error"
@@ -51,13 +49,25 @@ export const getFilesByUserID = async (req, res) => {
 
 
 
-// POST /api/vault
 
+// POST /api/vault
 export const uploadFile = async (req, res) => {
 
     try {
 
-        const file = await Vault.createFile({
+
+        // No file uploaded
+        if (!req.file) {
+
+            return res.status(400).json({
+                message: "No file uploaded"
+            });
+
+        }
+
+
+
+        const fileData = {
 
             user_id: req.user.id,
 
@@ -71,10 +81,28 @@ export const uploadFile = async (req, res) => {
 
             file_size: req.file.size
 
-        });
+        };
 
 
+
+        const file = await Vault.createFile(fileData);
+
+
+
+        // Duplicate filename
         if (!file) {
+
+
+            // Remove file already saved by multer
+            if (
+                req.file.path &&
+                fs.existsSync(req.file.path)
+            ) {
+
+                fs.unlinkSync(req.file.path);
+
+            }
+
 
             return res.status(409).json({
                 message: "File already exists"
@@ -83,22 +111,41 @@ export const uploadFile = async (req, res) => {
         }
 
 
+
         res.status(201).json({
 
-            message: "File uploaded",
+            message: "File uploaded successfully",
 
             file
 
         });
 
 
-    } catch (err) {
 
-        console.log(err);
+    } catch (error) {
+
+
+        console.error(error);
+
+
+
+        // cleanup if DB fails after multer upload
+        if (
+            req.file &&
+            req.file.path &&
+            fs.existsSync(req.file.path)
+        ) {
+
+            fs.unlinkSync(req.file.path);
+
+        }
+
+
 
         res.status(500).json({
             message: "Upload failed"
         });
+
 
     }
 
@@ -107,11 +154,12 @@ export const uploadFile = async (req, res) => {
 
 
 
-// DELETE /api/vault/:id
 
+// DELETE /api/vault/:id
 export const removeFile = async (req, res) => {
 
     try {
+
 
         const files = await Vault.getUserFiles(
             req.user.id
@@ -123,19 +171,23 @@ export const removeFile = async (req, res) => {
         );
 
 
+
         if (!file) {
 
             return res.status(404).json({
-                message: "File not found"
+                message: "File not found or unauthorized"
             });
 
         }
 
 
 
-        // Remove physical file
+        // Delete physical file
 
-        if (fs.existsSync(file.file_path)) {
+        if (
+            file.file_path &&
+            fs.existsSync(file.file_path)
+        ) {
 
             fs.unlinkSync(file.file_path);
 
@@ -149,7 +201,8 @@ export const removeFile = async (req, res) => {
         );
 
 
-        if (deleted === 0) {
+
+        if (!deleted) {
 
             return res.status(404).json({
                 message: "File not found"
@@ -160,17 +213,23 @@ export const removeFile = async (req, res) => {
 
 
         res.json({
+
             message: "Deleted successfully"
+
         });
+
 
 
     } catch (error) {
 
-        console.log(error);
+
+        console.error(error);
+
 
         res.status(500).json({
             message: "Server error"
         });
+
 
     }
 
@@ -181,28 +240,93 @@ export const removeFile = async (req, res) => {
 
 
 // PUT /api/vault/:id
-
 export const renameFile = async (req, res) => {
 
     try {
 
-        const file = await Vault.updateFileName(
-            req.params.id,
+        const { display_name } = req.body;
+
+
+        if (!display_name || !display_name.trim()) {
+
+            return res.status(400).json({
+                message: "Filename cannot be empty"
+            });
+
+        }
+
+
+        const cleanName = display_name.trim();
+
+
+
+        // Check duplicate name
+        const exists = await Vault.fileNameExists(
             req.user.id,
-            req.body.display_name
+            cleanName,
+            req.params.id
         );
 
 
-        res.json(file);
+        if (exists) {
+
+            return res.status(409).json({
+
+                message: "A file with this name already exists"
+
+            });
+
+        }
+
+
+
+
+        const file = await Vault.updateFileName(
+
+            req.params.id,
+
+            req.user.id,
+
+            cleanName
+
+        );
+
+
+
+        if (!file) {
+
+            return res.status(404).json({
+
+                message: "File not found or unauthorized"
+
+            });
+
+        }
+
+
+
+        res.json({
+
+            message: "Filename updated",
+
+            file
+
+        });
+
 
 
     } catch (error) {
 
-        console.log(error);
+
+        console.error(error);
+
 
         res.status(500).json({
+
             message: "Server error"
+
         });
+
 
     }
 
