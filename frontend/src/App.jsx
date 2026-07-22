@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Itinerary from './pages/Itinerary';
 import Gallery from './pages/Gallery';
 import Booking from './pages/Booking';
+import HotelDetails from './pages/HotelDetails';
 import Vault from './pages/Vault';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
@@ -22,6 +23,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/hotels/:id" element={<HotelDetails />} />
           <Route path="/itinerary" element={<Itinerary />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/vault" element={<Vault />} />
