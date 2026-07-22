@@ -10,6 +10,7 @@ import Vault from './pages/Vault';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
 import TodoList from "./pages/Todolist";
+import MyGallery from './pages/MyGallery';
 import './App.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/booking" element={<Booking />} />
           <Route path="/itinerary" element={<Itinerary />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/my-gallery" element={<MyGallery />} />
           <Route path="/vault" element={<Vault />} />
           <Route path="/todos" element={<TodoList />} />
           <Route path="/signup" element={<Signup />} />
