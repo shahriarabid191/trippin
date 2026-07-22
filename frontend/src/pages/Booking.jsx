@@ -126,6 +126,12 @@ export default function Booking() {
                         <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>location_on</span>
                         {hotel.location}
                       </div>
+                      {hotel.total_rooms != null && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#94A3B8', fontSize: '13px', marginTop: '4px' }}>
+                          <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>meeting_room</span>
+                          {hotel.total_rooms} rooms
+                        </div>
+                      )}
                     </div>
 
                     <div>

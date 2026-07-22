@@ -15,6 +15,7 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import itineraryRoutes from "./routes/itineraryRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 import path from "path";
 
@@ -56,6 +57,7 @@ app.use("/api/todos", todoRoutes);
 app.use("/api/vault", vaultRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/journals", journalRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/budgets", budgetRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/payments", paymentRoutes);
