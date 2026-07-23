@@ -9,10 +9,22 @@ const pool = new Pool({
     user: process.env.PGUSER,
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
+    keepAlive: true,
+});
+
+// Supabase's pooler drops idle connections, which makes pg emit an 'error'
+// event on the idle client. Without a listener, Node treats it as an
+// unhandled 'error' and crashes the whole process. Log and swallow it —
+// the pool discards the dead client and opens a fresh one on next query.
+pool.on('error', (err) => {
+    console.error('Unexpected Postgres pool error (idle client):', err.message);
 });
 
 pool.connect()
-    .then(() => console.log('Successfully connected to Supabase PostgreSQL'))
+    .then((client) => {
+        console.log('Successfully connected to Supabase PostgreSQL');
+        client.release();
+    })
     .catch((err) => console.error('Database connection error:', err));
 
 export default pool;

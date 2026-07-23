@@ -1,0 +1,457 @@
+/* ==========================================================================
+   My Gallery — personal photo Stack + control bubbles + upload dialog
+   theme: navy #0b1e30/#0c2135, accent #0d79bd, light blue #b7d7ef/#e3f2fd
+   ========================================================================== */
+
+.mygallery-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.mygallery-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  min-height: 40vh;
+  justify-content: center;
+  color: #4f5c69;
+}
+
+.gallery-spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid #e3f2fd;
+  border-top-color: #0d79bd;
+  animation: gallery-spin 0.9s linear infinite;
+}
+
+@keyframes gallery-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Login prompt ---------- */
+.mygallery-login-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 60px 0;
+  color: #4f5c69;
+}
+
+.mygallery-login-prompt .material-symbols-outlined {
+  font-size: 56px;
+  color: #b7d7ef;
+}
+
+.mygallery-login-btn {
+  border: 0;
+  background: #0b1e30;
+  color: #fff;
+  border-radius: 999px;
+  padding: 12px 32px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.mygallery-login-btn:hover {
+  background: #0d79bd;
+}
+
+/* ---------- Studio layout ---------- */
+.mygallery-studio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 20px 0 10px;
+}
+
+.mygallery-stage {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.mygallery-stack-box {
+  width: 300px;
+  height: 360px;
+}
+
+.mygallery-empty-card {
+  width: 300px;
+  height: 360px;
+  border: 2px dashed #b7d7ef;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #8da2b5;
+  background: #fff;
+}
+
+.mygallery-empty-card .material-symbols-outlined {
+  font-size: 48px;
+  color: #b7d7ef;
+}
+
+.mygallery-empty-card p {
+  margin: 0;
+  font-weight: 700;
+  color: #4f5c69;
+}
+
+.mygallery-empty-card small {
+  font-size: 12px;
+}
+
+/* ---------- Control bubbles ---------- */
+.mygallery-bubbles {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.mygallery-bubble {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(12, 33, 53, 0.16);
+  transition: transform 0.15s, background 0.2s, opacity 0.2s;
+}
+
+.mygallery-bubble:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.mygallery-bubble:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.mygallery-bubble .material-symbols-outlined {
+  font-size: 26px;
+}
+
+.mygallery-bubble.add {
+  background: #0b1e30;
+  color: #fff;
+}
+
+.mygallery-bubble.add:hover:not(:disabled) {
+  background: #0d79bd;
+}
+
+.mygallery-bubble.delete {
+  background: #fff;
+  color: #ba1a1a;
+  border: 1px solid #f2c4c4;
+}
+
+.mygallery-bubble.delete:hover:not(:disabled) {
+  background: #ffe3e3;
+}
+
+.mygallery-bubble.visibility.is-public {
+  background: #0d79bd;
+  color: #fff;
+}
+
+.mygallery-bubble.visibility.is-private {
+  background: #e3f2fd;
+  color: #0d79bd;
+}
+
+/* ---------- Active photo info ---------- */
+.mygallery-active-info {
+  text-align: center;
+  max-width: 420px;
+}
+
+.mygallery-active-caption {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0c2135;
+  word-break: break-word;
+}
+
+.mygallery-nocaption {
+  color: #8da2b5;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.mygallery-active-badges {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+.mygallery-visibility-badge,
+.mygallery-like-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
+.mygallery-visibility-badge .material-symbols-outlined,
+.mygallery-like-badge .material-symbols-outlined {
+  font-size: 17px;
+}
+
+.mygallery-visibility-badge.public {
+  background: #e3f2fd;
+  color: #0d79bd;
+}
+
+.mygallery-visibility-badge.private {
+  background: #eef1f4;
+  color: #4f5c69;
+}
+
+.mygallery-like-badge {
+  background: #ffe3ea;
+  color: #e0245e;
+}
+
+.mygallery-hint {
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: #8da2b5;
+}
+
+.mygallery-error {
+  margin-top: 18px;
+  color: #ba1a1a;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ---------- Upload dialog ---------- */
+.mygallery-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(8, 21, 36, 0.72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: mygallery-fade 0.2s ease-out;
+}
+
+@keyframes mygallery-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mygallery-upload-card {
+  width: min(100%, 420px);
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: mygallery-pop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mygallery-pop {
+  from { transform: translateY(12px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.mygallery-upload-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.mygallery-upload-head h3 {
+  margin: 0;
+  font-size: 22px;
+  color: #0c2135;
+}
+
+.mygallery-upload-close {
+  border: none;
+  background: #f0f4f8;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4f5c69;
+}
+
+.mygallery-upload-close:hover {
+  background: #e3f2fd;
+}
+
+.mygallery-dropzone {
+  display: block;
+  width: 100%;
+  height: 220px;
+  border: 2px dashed #b7d7ef;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #f7f9fb;
+  transition: border-color 0.2s;
+}
+
+.mygallery-dropzone:hover {
+  border-color: #0d79bd;
+}
+
+.mygallery-dropzone img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mygallery-dropzone-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #8da2b5;
+}
+
+.mygallery-dropzone-empty .material-symbols-outlined {
+  font-size: 44px;
+  color: #b7d7ef;
+}
+
+.mygallery-field {
+  position: relative;
+  margin-top: 16px;
+}
+
+.mygallery-field textarea {
+  width: 100%;
+  border: 1px solid #b7d7ef;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #0c2135;
+  resize: none;
+  background: #fff;
+}
+
+.mygallery-field textarea:focus {
+  outline: none;
+  border-color: #0d79bd;
+}
+
+.mygallery-counter {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 11px;
+  color: #8da2b5;
+}
+
+.mygallery-visibility-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  gap: 12px;
+}
+
+.mygallery-toggle-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #4f5c69;
+}
+
+.mygallery-switch {
+  display: flex;
+  background: #eef1f4;
+  border-radius: 999px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.mygallery-switch-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  background: transparent;
+  color: #4f5c69;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.mygallery-switch-opt .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.mygallery-switch-opt.active {
+  background: #0b1e30;
+  color: #fff;
+}
+
+.mygallery-upload-submit {
+  width: 100%;
+  margin-top: 22px;
+  border: none;
+  background: #0b1e30;
+  color: #fff;
+  border-radius: 999px;
+  padding: 14px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.mygallery-upload-submit:hover:not(:disabled) {
+  background: #0d79bd;
+}
+
+.mygallery-upload-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .mygallery-stage {
+    flex-direction: column-reverse;
+    gap: 20px;
+  }
+
+  .mygallery-bubbles {
+    flex-direction: row;
+  }
+}

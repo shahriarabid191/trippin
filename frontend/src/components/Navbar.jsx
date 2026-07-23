@@ -196,7 +196,15 @@ export default function Navbar() {
                     <button className="profile-dropdown-item" onClick={() => { navigate('/vault'); setProfileOpen(false); }}>
                       <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>lock</span> My Vault
                     </button>
-                    <button className="profile-dropdown-item" onClick={() => { navigate('/gallery'); setProfileOpen(false); }}>
+                    <button className="profile-dropdown-item" onClick={() => { navigate('/budget'); setProfileOpen(false); }}>
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>account_balance_wallet</span> My Budget
+                    </button>
+                    <button className="profile-dropdown-item" onClick={() => { navigate('/journal'); setProfileOpen(false); }}>
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>menu_book</span> My Journal
+                    </button>
+
+                    <button className="profile-dropdown-item" onClick={() => { navigate('/my-gallery'); setProfileOpen(false); }}>
+
                       <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>image</span> My Gallery
                     </button>
 
