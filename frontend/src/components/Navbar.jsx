@@ -11,6 +11,7 @@ export default function Navbar() {
   const [alertCount, setAlertCount] = useState(0);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const profileRef = useRef(null);
+  const notificationRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,12 +20,26 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (profileRef.current && !profileRef.current.contains(e.target)) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(e.target)
+      ) {
         setProfileOpen(false);
       }
+
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target)
+      ) {
+        setNotificationOpen(false);
+      }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
 
@@ -118,7 +133,10 @@ export default function Navbar() {
                 Hi, {user.username}
               </span>
 
-              <div style={{ position: "relative" }}>
+              <div
+                style={{ position: "relative" }}
+                ref={notificationRef}
+              >
 
                 <button
                   className="nav-icon-btn"

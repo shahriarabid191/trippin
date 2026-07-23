@@ -20,10 +20,6 @@ import itineraryRoutes from "./routes/itineraryRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 
-import path from "path";
-
-
-
 
 
 
