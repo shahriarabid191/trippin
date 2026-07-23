@@ -2,8 +2,14 @@ import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
+import NotificationDropdown from "./NotificationDropdown";
+import { getReceivedAlerts } from "../api/sosAlertAPI";
+
+
 export default function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
+  const [alertCount, setAlertCount] = useState(0);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,6 +26,41 @@ export default function Navbar() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+
+  const loadAlertCount = async () => {
+
+    try {
+
+      const data = await getReceivedAlerts();
+
+      const alerts = data.alerts || data;
+
+      const unread = alerts.filter(
+        alert => !alert.acked
+      );
+
+      setAlertCount(unread.length);
+
+    } catch (error) {
+
+      console.error(
+        "Failed to load alert count",
+        error
+      );
+
+    }
+
+  };
+
+
+  useEffect(() => {
+
+    loadAlertCount();
+
+  }, []);
+
+
 
   const navLinks = [
     { path: '/booking', label: 'Booking' },
@@ -72,9 +113,63 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <button className="nav-icon-btn" title="Notifications">
-                <span className="material-symbols-outlined">notifications</span>
-              </button>
+
+              <span style={{ color: '#fff', fontWeight: 600 }}>
+                Hi, {user.username}
+              </span>
+
+              <div style={{ position: "relative" }}>
+
+                <button
+                  className="nav-icon-btn"
+                  title="Notifications"
+                  onClick={() => {
+                    setNotificationOpen(prev => !prev);
+                    loadAlertCount();
+                  }}
+                >
+                  <span className="material-symbols-outlined">
+                    notifications
+                  </span>
+
+                  {alertCount > 0 && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "-5px",
+                        right: "-5px",
+                        background: "red",
+                        color: "white",
+                        width: "18px",
+                        height: "18px",
+                        borderRadius: "50%",
+                        fontSize: "12px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center"
+                      }}
+                    >
+                      {alertCount}
+                    </span>
+                  )}
+                </button>
+
+
+                {notificationOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "45px",
+                      right: "0",
+                      zIndex: 9999
+                    }}
+                  >
+                    <NotificationDropdown refreshCount={loadAlertCount} />
+                  </div>
+                )}
+
+              </div>
+
               <div style={{ position: 'relative' }} ref={profileRef}>
                 <button className="nav-icon-btn" title="Profile" onClick={() => setProfileOpen(o => !o)}>
                   <span className="material-symbols-outlined">account_circle</span>
@@ -91,10 +186,13 @@ export default function Navbar() {
                         <div className="profile-dropdown-divider" />
                       </>
                     )}
+                    <button className="profile-dropdown-item" onClick={() => { navigate('/sos'); setProfileOpen(false); }}>
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px', color: '#d32f2f' }}>emergency</span> SOS
+                    </button>
                     <button className="profile-dropdown-item" onClick={() => { navigate('/todos'); setProfileOpen(false); }}>
                       <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>checklist</span> My Todo List
                     </button>
-                    
+
                     <button className="profile-dropdown-item" onClick={() => { navigate('/vault'); setProfileOpen(false); }}>
                       <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>lock</span> My Vault
                     </button>

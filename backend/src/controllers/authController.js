@@ -49,7 +49,15 @@ export const loginUser = async (req, res) => {
         // 3. Issue JWT via HTTP-Only cookie
         issueAuthCookie(res, user);
 
-        res.status(200).json({ message: 'Logged in successfully', user: { id: user.id, email: user.email, role: user.role } });
+        res.status(200).json({
+            message: 'Logged in successfully',
+            user: {
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                role: user.role
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error' });
@@ -80,7 +88,15 @@ export const registerUser = async (req, res) => {
         // 5. Issue JWT Cookie so they are instantly logged in
         issueAuthCookie(res, user);
 
-        res.status(201).json({ message: 'User registered', user: { id: user.id, email: user.email, role: user.role } });
+        res.status(201).json({
+            message: 'User registered',
+            user: {
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                role: user.role
+            }
+        });
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ error: 'Server error during registration' });
@@ -98,6 +114,7 @@ export const getMe = async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
+                username: user.username,
                 role: user.role
             }
         });
