@@ -6,19 +6,19 @@ export default function Home() {
   const previewCards = [
     { title: '3 cities in Bangladesh', image: "https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?auto=format&fit=crop&w=500&q=80" },
     { title: '10 days', subtitle: 'Full itinerary', isTextCard: true },
-    { title: 'gigabytes of photos', image: "https://images.unsplash.com/photo-1593691509543-c55fb32caea3?auto=format&fit=crop&w=500&q=80" },
+    { title: 'gigabytes of photos', image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80" },
     { title: 'eat local delicacies', image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=80" },
-    { title: 'enjoy the vibe', image: "https://images.unsplash.com/photo-1596633608169-0d6b8f9f5d77?auto=format&fit=crop&w=500&q=80" },
+    { title: 'enjoy the vibe', image: "https://images.unsplash.com/photo-1522199755839-a2bacb67c546?auto=format&fit=crop&w=500&q=80" },
   ];
 
   const itinerary = [
     {
       days: 'Days 1-3', city: 'Dhaka',
-      images: ["https://images.unsplash.com/photo-1590040111840-1a66d2f0cf8f?auto=format&fit=crop&w=400&q=80"],
+      images: ["https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=400&q=80"],
     },
     {
       days: 'Days 4-6', city: 'Sylhet',
-      images: ["https://images.unsplash.com/photo-1598514982835-cda9f52f4dc7?auto=format&fit=crop&w=400&q=80"],
+      images: ["https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=400&q=80"],
     },
     {
       days: 'Days 7-10', city: "Cox's Bazar",
@@ -38,7 +38,6 @@ export default function Home() {
       <header className="hero">
         <div className="hero-overlay" />
         <div className="hero-title-wrap">
-          <img className="map-overlay" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Bangladesh_location_map.svg/512px-Bangladesh_location_map.svg.png" alt="Bangladesh map" />
           <h1>BANGLADESH</h1>
         </div>
         

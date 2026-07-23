@@ -12,6 +12,19 @@ import vaultRoutes from "./routes/vaultRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import sosRoutes from "./routes/sosRoutes.js";
 import sosAlertRoutes from "./routes/sosAlertRoutes.js";
+import journalRoutes from "./routes/journalRoutes.js";
+import budgetRoutes from "./routes/budgetRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+import itineraryRoutes from "./routes/itineraryRoutes.js";
+import galleryRoutes from "./routes/galleryRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+
+import path from "path";
+
+
+
+
 
 
 const app = express();
@@ -27,7 +40,7 @@ app.use((req, res, next) => {
 // CORS MIDDLEWARE
 app.use(cors({
     origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type'],
     credentials: true
 }));
@@ -50,9 +63,13 @@ app.use("/api/vault", vaultRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/sos", sosRoutes);
 app.use("/api/sos-alerts", sosAlertRoutes);
-
+app.use("/api/journals", journalRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/budgets", budgetRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/itinerary", itineraryRoutes);
+app.use("/api/gallery", galleryRoutes);
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-
-
-export default app;
+export default app; 

@@ -287,7 +287,7 @@ export default function TodoList() {
         {
           loading &&
 
-          <p style={{color:"#fff"}}>
+          <p style={{color:"#4f5c69"}}>
             Loading...
           </p>
 

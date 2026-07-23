@@ -38,6 +38,32 @@ export const authenticateUser = (req, res, next) => {
 };
 
 
+// Verifies the JWT cookie if present and attaches req.user, but never
+// blocks the request — lets both guests and logged-in users hit a route.
+export const attachUserIfPresent = (req, res, next) => {
+
+    const token = req.cookies.token;
+
+    if (!token) {
+        return next();
+    }
+
+    try {
+
+        req.user = jwt.verify(
+            token,
+            process.env.JWT_SECRET
+        );
+
+    } catch (error) {
+        // Invalid/expired token: proceed as a guest rather than failing.
+    }
+
+    next();
+
+};
+
+
 export const authorizeAdmin=(req,res,next)=>{
 
  if(req.user.role!=="admin")
