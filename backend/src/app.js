@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from "cookie-parser";
+import path from "path";
 
 
 import todoRoutes from "./routes/todoRoutes.js";
@@ -9,11 +10,8 @@ import hotelRoutes from './routes/hotelRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import vaultRoutes from "./routes/vaultRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
-import path from "path";
-
-
-
-
+import sosRoutes from "./routes/sosRoutes.js";
+import sosAlertRoutes from "./routes/sosAlertRoutes.js";
 
 
 const app = express();
@@ -38,8 +36,10 @@ app.use(cors({
 // BODY PARSER
 app.use(express.json());
 
+
 // COOKIE PARSER
 app.use(cookieParser());
+
 
 // ROUTES
 app.use('/api/auth', authRoutes);
@@ -48,6 +48,11 @@ app.use('/api/booking', bookingRoutes);
 app.use("/api/todos", todoRoutes);
 app.use("/api/vault", vaultRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/sos", sosRoutes);
+app.use("/api/sos-alerts", sosAlertRoutes);
+
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
+
 export default app;

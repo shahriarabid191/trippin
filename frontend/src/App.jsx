@@ -10,6 +10,7 @@ import Vault from './pages/Vault';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
 import TodoList from "./pages/Todolist";
+import SOS from "./pages/SOS";
 import './App.css';
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
     <BrowserRouter>
       <div className="root-layout">
         <Navbar />
-        
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -26,8 +27,9 @@ function App() {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/vault" element={<Vault />} />
           <Route path="/todos" element={<TodoList />} />
+          <Route path="/sos" element={<SOS />}/>
           <Route path="/signup" element={<Signup />} />
-         <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
 
         <ChatWidget />
