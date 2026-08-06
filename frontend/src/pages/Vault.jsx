@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   uploadFile,
@@ -6,11 +7,14 @@ import {
   deleteFile,
   updateFileName
 } from "../api/vaultAPI";
+import { AuthContext } from "../context/AuthContext";
+import "./Vault.css";
 
 
 export default function Vault() {
 
-
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useContext(AuthContext);
 
   const [files, setFiles] = useState([]);
 
@@ -50,9 +54,9 @@ export default function Vault() {
 
   useEffect(() => {
 
-    loadFiles();
+    if (user) loadFiles();
 
-  }, []);
+  }, [user]);
 
 
 
@@ -148,11 +152,45 @@ async function handleRename(id, currentName) {
 }
 
 
+  if (!authLoading && !user) {
+    return (
+      <div className="page vault-page">
+        <main className="subpage-content vault-content">
+          <h2>My Vault</h2>
+          <p className="subpage-subtitle">
+            Store, organize, and access your important travel documents and files securely.
+          </p>
+          <div className="vault-login-prompt">
+            <span className="material-symbols-outlined">lock</span>
+            <p>Sign in to use the Vault.</p>
+            <button className="vault-login-btn" onClick={() => navigate('/login')}>
+              Sign In
+            </button>
+          </div>
+        </main>
+
+        <footer className="footer" style={{ marginTop: '0', minHeight: 'auto', padding: '60px 48px 24px' }}>
+          <div className="footer-overlay" />
+          <div className="footer-bottom" style={{ marginTop: '0', borderTop: 'none', paddingTop: '0' }}>
+            <strong style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>◉ TRIPPIN</strong>
+            <div className="footer-links">
+              <a href="/booking" onClick={(e) => { e.preventDefault(); navigate('/booking'); }}>Booking</a>
+              <a href="/itinerary" onClick={(e) => { e.preventDefault(); navigate('/itinerary'); }}>Itinerary</a>
+              <a href="/vault" onClick={(e) => { e.preventDefault(); navigate('/vault'); }}>Vault</a>
+              <a href="/gallery" onClick={(e) => { e.preventDefault(); navigate('/gallery'); }}>Gallery</a>
+            </div>
+            <div style={{ width: 80 }} />
+          </div>
+        </footer>
+      </div>
+    );
+  }
+
   return (
 
-    <div className="page">
+    <div className="page vault-page">
 
-      <main className="subpage-content">
+      <main className="subpage-content vault-content">
 
 
         <h2>My Vault</h2>
@@ -423,6 +461,20 @@ async function handleRename(id, currentName) {
 
 
       </main>
+
+      <footer className="footer" style={{ marginTop: '0', minHeight: 'auto', padding: '60px 48px 24px' }}>
+        <div className="footer-overlay" />
+        <div className="footer-bottom" style={{ marginTop: '0', borderTop: 'none', paddingTop: '0' }}>
+          <strong style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>◉ TRIPPIN</strong>
+          <div className="footer-links">
+            <a href="/booking" onClick={(e) => { e.preventDefault(); navigate('/booking'); }}>Booking</a>
+            <a href="/itinerary" onClick={(e) => { e.preventDefault(); navigate('/itinerary'); }}>Itinerary</a>
+            <a href="/vault" onClick={(e) => { e.preventDefault(); navigate('/vault'); }}>Vault</a>
+            <a href="/gallery" onClick={(e) => { e.preventDefault(); navigate('/gallery'); }}>Gallery</a>
+          </div>
+          <div style={{ width: 80 }} />
+        </div>
+      </footer>
 
     </div>
 

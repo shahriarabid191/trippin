@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import PaymentModal from '../components/PaymentModal';
 import { StarRow } from '../components/HotelReviews';
+import './Booking.css';
 
 const NAVY = '#0F172A';
 const GOLD = '#FBBF24';
@@ -54,8 +55,8 @@ export default function Booking() {
   const goToHotel = (hotel, hash = '') => navigate(`/hotels/${hotel.id}${hash}`);
 
   return (
-    <div className="page">
-      <main className="subpage-content" style={{ padding: '40px 24px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="page booking-page">
+      <main className="subpage-content booking-content" style={{ padding: '40px 24px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ marginBottom: '40px' }}>
           <h2 style={{ fontSize: '32px', marginBottom: '8px' }}>Book Your Anchor</h2>
           <p style={{ color: '#4f5c69' }}>Discover pristine escapes handpicked for your next destination.</p>
@@ -203,6 +204,20 @@ export default function Booking() {
           </div>
         )}
       </main>
+
+      <footer className="footer" style={{ marginTop: '0', minHeight: 'auto', padding: '60px 48px 24px' }}>
+        <div className="footer-overlay" />
+        <div className="footer-bottom" style={{ marginTop: '0', borderTop: 'none', paddingTop: '0' }}>
+          <strong style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>◉ TRIPPIN</strong>
+          <div className="footer-links">
+            <a href="/booking" onClick={(e) => { e.preventDefault(); navigate('/booking'); }}>Booking</a>
+            <a href="/itinerary" onClick={(e) => { e.preventDefault(); navigate('/itinerary'); }}>Itinerary</a>
+            <a href="/vault" onClick={(e) => { e.preventDefault(); navigate('/vault'); }}>Vault</a>
+            <a href="/gallery" onClick={(e) => { e.preventDefault(); navigate('/gallery'); }}>Gallery</a>
+          </div>
+          <div style={{ width: 80 }} />
+        </div>
+      </footer>
 
       {/* Payment / booking modal */}
       {selectedHotel && (

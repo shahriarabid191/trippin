@@ -12,6 +12,8 @@ export async function getFiles() {
         }
     );
 
+    if (!response.ok) return [];
+
     return response.json();
 
 }

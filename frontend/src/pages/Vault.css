@@ -1,0 +1,39 @@
+.vault-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.vault-content {
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+/* ---------- Login prompt ---------- */
+.vault-login-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 60px 0;
+  color: #4f5c69;
+}
+
+.vault-login-prompt .material-symbols-outlined {
+  font-size: 56px;
+  color: #b7d7ef;
+}
+
+.vault-login-btn {
+  border: 0;
+  background: #0b1e30;
+  color: #fff;
+  border-radius: 999px;
+  padding: 12px 32px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.vault-login-btn:hover {
+  background: #0d79bd;
+}
