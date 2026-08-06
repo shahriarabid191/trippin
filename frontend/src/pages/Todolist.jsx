@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   getTodos,
@@ -6,9 +7,12 @@ import {
   deleteTodo,
   updateTodo
 } from "../api/todoAPI";
+import "./Todolist.css";
 
 
 export default function TodoList() {
+
+  const navigate = useNavigate();
 
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState("");
@@ -160,9 +164,9 @@ export default function TodoList() {
 
   return (
 
-    <div className="page">
+    <div className="page todolist-page">
 
-      <main className="subpage-content">
+      <main className="subpage-content todolist-content">
 
 
         <h2>My Todo List</h2>
@@ -429,6 +433,19 @@ export default function TodoList() {
 
       </main>
 
+      <footer className="footer" style={{ marginTop: '0', minHeight: 'auto', padding: '60px 48px 24px' }}>
+        <div className="footer-overlay" />
+        <div className="footer-bottom" style={{ marginTop: '0', borderTop: 'none', paddingTop: '0' }}>
+          <strong style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>◉ TRIPPIN</strong>
+          <div className="footer-links">
+            <a href="/booking" onClick={(e) => { e.preventDefault(); navigate('/booking'); }}>Booking</a>
+            <a href="/itinerary" onClick={(e) => { e.preventDefault(); navigate('/itinerary'); }}>Itinerary</a>
+            <a href="/vault" onClick={(e) => { e.preventDefault(); navigate('/vault'); }}>Vault</a>
+            <a href="/gallery" onClick={(e) => { e.preventDefault(); navigate('/gallery'); }}>Gallery</a>
+          </div>
+          <div style={{ width: 80 }} />
+        </div>
+      </footer>
 
     </div>
 

@@ -1,0 +1,9 @@
+.hoteldetails-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.hoteldetails-content {
+  flex: 1 0 auto;
+  width: 100%;
+}

@@ -135,7 +135,7 @@ export default function MyGallery() {
   // Not logged in
   if (!authLoading && !user) {
     return (
-      <div className="page">
+      <div className="page mygallery-root">
         <main className="subpage-content mygallery-page">
           <h2>My Gallery</h2>
           <div className="mygallery-login-prompt">
@@ -146,12 +146,26 @@ export default function MyGallery() {
             </button>
           </div>
         </main>
+
+        <footer className="footer" style={{ marginTop: '0', minHeight: 'auto', padding: '60px 48px 24px' }}>
+          <div className="footer-overlay" />
+          <div className="footer-bottom" style={{ marginTop: '0', borderTop: 'none', paddingTop: '0' }}>
+            <strong style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>◉ TRIPPIN</strong>
+            <div className="footer-links">
+              <a href="/booking" onClick={(e) => { e.preventDefault(); navigate('/booking'); }}>Booking</a>
+              <a href="/itinerary" onClick={(e) => { e.preventDefault(); navigate('/itinerary'); }}>Itinerary</a>
+              <a href="/vault" onClick={(e) => { e.preventDefault(); navigate('/vault'); }}>Vault</a>
+              <a href="/gallery" onClick={(e) => { e.preventDefault(); navigate('/gallery'); }}>Gallery</a>
+            </div>
+            <div style={{ width: 80 }} />
+          </div>
+        </footer>
       </div>
     );
   }
 
   return (
-    <div className="page">
+    <div className="page mygallery-root">
       <main className="subpage-content mygallery-page">
         <h2>My Gallery</h2>
         <p className="subpage-subtitle">
@@ -313,6 +327,20 @@ export default function MyGallery() {
           </div>
         </div>
       )}
+
+      <footer className="footer" style={{ marginTop: '0', minHeight: 'auto', padding: '60px 48px 24px' }}>
+        <div className="footer-overlay" />
+        <div className="footer-bottom" style={{ marginTop: '0', borderTop: 'none', paddingTop: '0' }}>
+          <strong style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>◉ TRIPPIN</strong>
+          <div className="footer-links">
+            <a href="/booking" onClick={(e) => { e.preventDefault(); navigate('/booking'); }}>Booking</a>
+            <a href="/itinerary" onClick={(e) => { e.preventDefault(); navigate('/itinerary'); }}>Itinerary</a>
+            <a href="/vault" onClick={(e) => { e.preventDefault(); navigate('/vault'); }}>Vault</a>
+            <a href="/gallery" onClick={(e) => { e.preventDefault(); navigate('/gallery'); }}>Gallery</a>
+          </div>
+          <div style={{ width: 80 }} />
+        </div>
+      </footer>
     </div>
   );
 }

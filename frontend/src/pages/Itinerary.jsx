@@ -172,7 +172,7 @@ export default function Itinerary() {
   const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
-    <div className="page">
+    <div className="page itinerary-page">
       <main className="subpage-content itinerary-builder">
         {viewState === 'checking' && <div className="itinerary-checking" />}
 

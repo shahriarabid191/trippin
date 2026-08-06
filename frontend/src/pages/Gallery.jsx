@@ -151,6 +151,20 @@ export default function Gallery() {
         </div>
       )}
 
+      <footer className="footer" style={{ marginTop: '0', minHeight: 'auto', padding: '60px 48px 24px' }}>
+        <div className="footer-overlay" />
+        <div className="footer-bottom" style={{ marginTop: '0', borderTop: 'none', paddingTop: '0' }}>
+          <strong style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>◉ TRIPPIN</strong>
+          <div className="footer-links">
+            <a href="/booking" onClick={(e) => { e.preventDefault(); navigate('/booking'); }}>Booking</a>
+            <a href="/itinerary" onClick={(e) => { e.preventDefault(); navigate('/itinerary'); }}>Itinerary</a>
+            <a href="/vault" onClick={(e) => { e.preventDefault(); navigate('/vault'); }}>Vault</a>
+            <a href="/gallery" onClick={(e) => { e.preventDefault(); navigate('/gallery'); }}>Gallery</a>
+          </div>
+          <div style={{ width: 80 }} />
+        </div>
+      </footer>
+
       {selectedPhoto && (
         <div className="gphoto-modal" onClick={closeModal}>
           <div className="gphoto-card" onClick={(e) => e.stopPropagation()}>
