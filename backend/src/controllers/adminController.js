@@ -3,11 +3,9 @@ import pool from '../config/db.js';
 // =====================================================================
 // Admin oversight controller.
 //
-// NOTE: Per project decision, these endpoints are intentionally left
-// open (no authenticateUser/authorizeAdmin middleware). Access control
-// is enforced on the frontend via the admin route guard only. If you
-// later want to lock these down, wrap the routes in adminRoutes.js with
-// authenticateUser + authorizeAdmin from middlewares/authMiddleware.js.
+// All routes in adminRoutes.js are gated by authenticateUser +
+// authorizeAdmin (see middlewares/authMiddleware.js), so req.user is
+// guaranteed to be a logged-in admin by the time these run.
 // =====================================================================
 
 // GET /api/admin/bookings
