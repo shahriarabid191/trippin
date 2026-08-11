@@ -15,6 +15,7 @@ import SOS from "./pages/SOS";
 import MyGallery from './pages/MyGallery';
 import Journal from "./pages/Journal";
 import BudgetTracker from "./pages/BudgetTracker";
+import Translate from "./pages/Translate";
 import './App.css';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
           <Route path="/sos" element={<SOS />}/>
           <Route path="/journal" element={<Journal />} />
           <Route path="/budget" element={<BudgetTracker />} />
+          <Route path="/translate" element={<Translate />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>

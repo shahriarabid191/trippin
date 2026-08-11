@@ -220,6 +220,9 @@ export default function Navbar() {
                     <button className="profile-dropdown-item" onClick={() => { navigate('/journal'); setProfileOpen(false); }}>
                       <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>menu_book</span> My Journal
                     </button>
+                    <button className="profile-dropdown-item" onClick={() => { navigate('/translate'); setProfileOpen(false); }}>
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>translate</span> Translate
+                    </button>
 
                     <button className="profile-dropdown-item" onClick={() => { navigate('/my-gallery'); setProfileOpen(false); }}>
 
