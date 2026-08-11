@@ -853,6 +853,17 @@ body {
   background: #e3f2fd;
 }
 
+.auth-error {
+  background: rgba(186, 26, 26, 0.15);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  color: #ff9b9b;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0 0 16px;
+}
+
 .auth-link {
   background: none;
   border: none;

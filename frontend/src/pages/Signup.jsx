@@ -7,13 +7,15 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [showAdminCode, setShowAdminCode] = useState(false);
   const [adminCode, setAdminCode] = useState('');
-  
+  const [error, setError] = useState('');
+
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    
+    setError('');
+
     try {
       const response = await fetch('http://localhost:5050/api/auth/register', {
         method: 'POST',
@@ -28,10 +30,11 @@ export default function Signup() {
         login(data.user);
         navigate('/');
       } else {
-        alert(data.error || 'Signup failed');
+        setError(data.error || 'Signup failed');
       }
     } catch (error) {
       console.error('Error during signup:', error);
+      setError('Something went wrong. Please try again.');
     }
   };
 
@@ -40,7 +43,9 @@ export default function Signup() {
       <div className="auth-card">
         <h2>Create Account</h2>
         <p>Join Trippin to save your anchors.</p>
-        
+
+        {error && <p className="auth-error">{error}</p>}
+
         <form className="auth-form" onSubmit={handleSignup}>
           <input 
             type="email" 
