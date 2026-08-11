@@ -19,6 +19,7 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 import itineraryRoutes from "./routes/itineraryRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import translateRoutes from "./routes/translateRoutes.js";
 
 
 
@@ -66,6 +67,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/itinerary", itineraryRoutes);
 app.use("/api/gallery", galleryRoutes);
+app.use("/api/translate", translateRoutes);
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 export default app; 
