@@ -86,9 +86,22 @@ export default function Navbar() {
   ];
 
   const isHome = location.pathname === '/';
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!isHome) {
+      setScrolled(false);
+      return;
+    }
+
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isHome]);
 
   return (
-    <header className={isHome ? 'home-navbar' : 'subpage-header'}>
+    <header className={isHome ? `home-navbar${scrolled ? ' home-navbar-scrolled' : ''}` : 'subpage-header'}>
       <nav className="top-nav">
         <div className="brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
           ◉ TRIPPIN
