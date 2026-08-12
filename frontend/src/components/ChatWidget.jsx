@@ -14,12 +14,20 @@ export default function ChatWidget() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const scrollRef = useRef(null);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, open, loading]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -95,11 +103,12 @@ export default function ChatWidget() {
       )}
 
       <button
-        className="chat-fab"
+        className={`chat-fab${(open || scrolled) ? ' chat-fab-compact' : ''}`}
         onClick={() => setOpen(o => !o)}
         aria-label={open ? 'Close chat' : 'Open chat'}
       >
         <span className="material-symbols-outlined">{open ? 'close' : 'chat'}</span>
+        <span className="chat-fab-label">Chat with us</span>
       </button>
     </div>
   );
