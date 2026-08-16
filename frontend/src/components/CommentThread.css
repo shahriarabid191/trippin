@@ -1,0 +1,315 @@
+/* ==========================================================================
+   CommentThread — shared by the public Gallery modal and the My Gallery
+   floating bubble. Colours come from custom properties so the same markup
+   can sit on a white card or on the frosted-glass panel; the glass version
+   only has to override these four values.
+   ========================================================================== */
+
+.ct-root {
+  --ct-text: #0c2135;
+  --ct-muted: #6b7c8c;
+  --ct-line: #e3f2fd;
+  --ct-field: #f7f9fb;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ---------- Scrolling list ---------- */
+.ct-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #b7d7ef transparent;
+}
+
+.ct-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ct-list::-webkit-scrollbar-thumb {
+  background: #b7d7ef;
+  border-radius: 999px;
+}
+
+.ct-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------- Loading / empty ---------- */
+.ct-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 24px 0;
+  color: var(--ct-muted);
+  text-align: center;
+}
+
+.ct-empty .material-symbols-outlined {
+  font-size: 40px;
+  color: #b7d7ef;
+}
+
+.ct-empty p {
+  margin: 0;
+  font-weight: 700;
+  color: var(--ct-text);
+}
+
+.ct-empty small {
+  font-size: 12px;
+}
+
+/* ---------- One comment ---------- */
+.ct-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ct-comment {
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--ct-field);
+}
+
+/* Replies indent and get a rail so a thread reads at a glance. */
+.ct-comment.is-reply {
+  margin-left: 22px;
+  border-left: 2px solid #b7d7ef;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.ct-comment-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ct-author {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0d79bd;
+}
+
+.ct-time {
+  font-size: 11px;
+  color: var(--ct-muted);
+}
+
+.ct-body {
+  margin: 4px 0 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ct-text);
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* ---------- Per-comment actions ---------- */
+.ct-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ct-reply-btn,
+.ct-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  padding: 4px 6px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ct-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ct-reply-btn .material-symbols-outlined,
+.ct-delete-btn .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.ct-reply-btn:hover {
+  background: #e3f2fd;
+  color: #0d79bd;
+}
+
+.ct-delete-btn:hover {
+  background: #ffe3e3;
+  color: #ba1a1a;
+}
+
+/* Like sits at the far right with its count beside it. */
+.ct-like {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ct-like-btn {
+  border: none;
+  background: transparent;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.ct-like-btn .material-symbols-outlined {
+  font-size: 18px;
+  color: #8da2b5;
+  transition: color 0.15s;
+}
+
+.ct-like-btn:hover:not(:disabled) {
+  background: #ffe3ea;
+  transform: scale(1.1);
+}
+
+.ct-like-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ct-like-btn.liked .material-symbols-outlined {
+  color: #e0245e;
+}
+
+.ct-like-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ct-text);
+  min-width: 10px;
+}
+
+/* ---------- Composer ---------- */
+.ct-composer {
+  flex-shrink: 0;
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--ct-line);
+}
+
+.ct-replying {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #e3f2fd;
+  font-size: 12px;
+  color: #0c2135;
+}
+
+.ct-replying strong {
+  color: #0d79bd;
+}
+
+.ct-replying button {
+  border: none;
+  background: transparent;
+  display: flex;
+  padding: 0;
+  cursor: pointer;
+  color: #4f5c69;
+}
+
+.ct-replying .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.ct-input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.ct-input-row textarea {
+  flex: 1;
+  resize: none;
+  min-height: 40px;
+  max-height: 110px;
+  padding: 10px 12px;
+  border: 1px solid var(--ct-line);
+  border-radius: 14px;
+  background: var(--ct-field);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--ct-text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.ct-input-row textarea:focus {
+  border-color: #0d79bd;
+}
+
+.ct-input-row textarea::placeholder {
+  color: var(--ct-muted);
+}
+
+.ct-send {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #0b1e30;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.ct-send:hover:not(:disabled) {
+  background: #0d79bd;
+}
+
+.ct-send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ct-send .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.ct-error {
+  flex-shrink: 0;
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: #ba1a1a;
+}
+
+.ct-guest {
+  flex-shrink: 0;
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--ct-line);
+  font-size: 13px;
+  color: var(--ct-muted);
+  text-align: center;
+}

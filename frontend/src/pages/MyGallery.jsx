@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Stack from '../components/Stack';
+import CommentThread from '../components/CommentThread';
 import { AuthContext } from '../context/AuthContext';
 import {
   getMyGallery,
@@ -21,6 +22,7 @@ export default function MyGallery() {
   const [activeId, setActiveId] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const [showComments, setShowComments] = useState(false);
 
   // Upload dialog state
   const [showUpload, setShowUpload] = useState(false);
@@ -114,6 +116,14 @@ export default function MyGallery() {
       setBusy(false);
     }
   }
+
+  // The bubble always mirrors whatever card is on top of the stack, so the
+  // count on the active photo has to follow the thread it is showing.
+  const handleCommentCount = useCallback((count) => {
+    setPhotos((prev) =>
+      prev.map((p) => (p.id === activePhoto?.id ? { ...p, commentCount: count } : p))
+    );
+  }, [activePhoto?.id]);
 
   async function handleToggleVisibility() {
     if (!activePhoto || busy) return;
@@ -215,6 +225,18 @@ export default function MyGallery() {
                     {activePhoto?.isPublic ? 'public' : 'lock'}
                   </span>
                 </button>
+
+                <button
+                  className={`mygallery-bubble comments ${showComments ? 'open' : ''}`}
+                  onClick={() => setShowComments((v) => !v)}
+                  title="Comments on the top photo"
+                  disabled={!activePhoto}
+                >
+                  <span className="material-symbols-outlined">chat_bubble</span>
+                  {activePhoto?.commentCount > 0 && (
+                    <span className="mygallery-bubble-badge">{activePhoto.commentCount}</span>
+                  )}
+                </button>
               </div>
             </div>
 
@@ -235,6 +257,10 @@ export default function MyGallery() {
                     <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
                     {activePhoto.likeCount}
                   </span>
+                  <span className="mygallery-visibility-badge mygallery-comment-badge">
+                    <span className="material-symbols-outlined">chat_bubble</span>
+                    {activePhoto.commentCount}
+                  </span>
                 </div>
                 <p className="mygallery-hint">Drag or click the stack to bring another photo to the front.</p>
               </div>
@@ -244,6 +270,34 @@ export default function MyGallery() {
 
         {error && <p className="mygallery-error">{error}</p>}
       </main>
+
+      {/* Floating glass bubble — the comments on whichever photo is currently
+          on top of the stack. Follows the stack as you flip through it. */}
+      {showComments && activePhoto && (
+        <aside className="mygallery-comment-bubble">
+          <div className="mygallery-bubble-head">
+            <div>
+              <h4>Comments</h4>
+              <p>{activePhoto.caption || 'Top photo in your stack'}</p>
+            </div>
+            <button
+              className="mygallery-bubble-close"
+              onClick={() => setShowComments(false)}
+              aria-label="Close comments"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+
+          <CommentThread
+            key={activePhoto.id}
+            photoId={activePhoto.id}
+            canPost
+            canModerate
+            onCountChange={handleCommentCount}
+          />
+        </aside>
+      )}
 
       {/* Upload dialog */}
       {showUpload && (
