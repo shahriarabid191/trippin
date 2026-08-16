@@ -137,3 +137,94 @@ export async function toggleLike(id) {
     return response.json();
 
 }
+
+
+
+// Every comment on a photo, flat — each carries a parentId for nesting.
+export async function getComments(photoID) {
+
+    const response = await fetch(
+        `${API_URL}/${photoID}/comments`,
+        {
+            credentials: "include"
+        }
+    );
+
+    if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || "Failed to load comments");
+    }
+
+    return response.json();
+
+}
+
+
+
+// Post a comment. Pass parentId to make it a reply.
+export async function addComment(photoID, body, parentId = null) {
+
+    const response = await fetch(
+        `${API_URL}/${photoID}/comments`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({ body, parentId })
+        }
+    );
+
+    if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || "Failed to post comment");
+    }
+
+    return response.json();
+
+}
+
+
+
+// Delete a comment (yours, or any comment on your own photo)
+export async function deleteComment(commentID) {
+
+    const response = await fetch(
+        `${API_URL}/comments/${commentID}`,
+        {
+            method: "DELETE",
+            credentials: "include"
+        }
+    );
+
+    if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || "Failed to delete comment");
+    }
+
+    return response.json();
+
+}
+
+
+
+// Heart / un-heart a comment. Returns { liked, likeCount }.
+export async function toggleCommentLike(commentID) {
+
+    const response = await fetch(
+        `${API_URL}/comments/${commentID}/like`,
+        {
+            method: "POST",
+            credentials: "include"
+        }
+    );
+
+    if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || "Failed to react");
+    }
+
+    return response.json();
+
+}

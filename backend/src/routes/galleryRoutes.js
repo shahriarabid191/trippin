@@ -8,7 +8,11 @@ import {
     uploadPhoto,
     updateVisibility,
     removePhoto,
-    toggleLike
+    toggleLike,
+    getComments,
+    addComment,
+    removeComment,
+    toggleCommentLike
 } from "../controllers/galleryController.js";
 
 import { authenticateUser, attachUserIfPresent } from "../middlewares/authMiddleware.js";
@@ -92,6 +96,42 @@ router.post(
     "/:id/like",
     authenticateUser,
     toggleLike
+);
+
+
+// --- Comments ---
+// The comment-scoped routes are keyed on a comment id, not a photo id, so
+// they live under "/comments/..." to stay clear of the photo routes above.
+
+// Heart / un-heart a comment
+router.post(
+    "/comments/:commentId/like",
+    authenticateUser,
+    toggleCommentLike
+);
+
+
+// Delete a comment (its author, or the owner of the photo)
+router.delete(
+    "/comments/:commentId",
+    authenticateUser,
+    removeComment
+);
+
+
+// Read a photo's comment thread
+router.get(
+    "/:id/comments",
+    attachUserIfPresent,
+    getComments
+);
+
+
+// Post a comment or a reply
+router.post(
+    "/:id/comments",
+    authenticateUser,
+    addComment
 );
 
 
