@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import PaymentModal from '../components/PaymentModal';
 import HotelReviews, { StarRow } from '../components/HotelReviews';
+import Footer from '../components/Footer';
+import './HotelDetails.css';
 
 export default function HotelDetails() {
   const { id } = useParams();
@@ -61,8 +63,8 @@ export default function HotelDetails() {
   const reviewCount = Number(hotel.review_count ?? 0);
 
   return (
-    <div className="page">
-      <main className="subpage-content" style={{ padding: '32px 24px 80px', maxWidth: '1000px', margin: '0 auto' }}>
+    <div className="page hoteldetails-page">
+      <main className="subpage-content hoteldetails-content" style={{ padding: '32px 24px 80px', maxWidth: '1000px', margin: '0 auto' }}>
         <button
           onClick={() => navigate('/booking')}
           style={{
@@ -170,6 +172,8 @@ export default function HotelDetails() {
           <HotelReviews hotelId={hotel.id} />
         </div>
       </main>
+
+      <Footer />
 
       {showPayment && (
         <PaymentModal hotel={hotel} user={user} onClose={() => setShowPayment(false)} />

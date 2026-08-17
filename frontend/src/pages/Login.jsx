@@ -5,12 +5,14 @@ import { AuthContext } from '../context/AuthContext';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+    setError('');
+
     try {
       const response = await fetch('http://localhost:5050/api/auth/login', {
         method: 'POST',
@@ -25,10 +27,11 @@ export default function Login() {
         login(data.user);
         navigate('/');
       } else {
-        alert(data.error || 'Login failed. Please check your credentials.');
+        setError(data.error || 'Login failed. Please check your credentials.');
       }
     } catch (error) {
       console.error('Error logging in:', error);
+      setError('Something went wrong. Please try again.');
     }
   };
 
@@ -37,7 +40,9 @@ export default function Login() {
       <div className="auth-card">
         <h2>Welcome Back</h2>
         <p>Sign in to manage your anchor.</p>
-        
+
+        {error && <p className="auth-error">{error}</p>}
+
         <form className="auth-form" onSubmit={handleLogin}>
           <input 
             type="email" 

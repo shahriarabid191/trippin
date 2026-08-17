@@ -105,15 +105,48 @@ export async function deleteFile(id, userID){
 
 }
 
+
+// Check duplicate filename
+export async function fileNameExists(userID, display_name, excludeID) {
+
+    const result = await pool.query(
+
+        `
+        SELECT id
+        FROM files
+        WHERE user_id=$1
+        AND display_name=$2
+        AND id != $3
+        `,
+
+        [
+            userID,
+            display_name,
+            excludeID
+        ]
+
+    );
+
+
+    return result.rows.length > 0;
+
+}
+
+
+
+
+
 // Update display name
-export async function updateFileName(id, userID, display_name){
+export async function updateFileName(id, userID, display_name) {
+
 
     const result = await pool.query(
 
         `
         UPDATE files
         SET display_name=$1
-        WHERE id=$2 AND user_id=$3
+        WHERE id=$2
+        AND user_id=$3
         RETURNING *
         `,
 

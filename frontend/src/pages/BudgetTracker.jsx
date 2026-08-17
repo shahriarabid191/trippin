@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Footer from "../components/Footer";
 
 import {
   getBudgets,
@@ -8,9 +9,11 @@ import {
   addExpense,
   deleteExpense
 } from "../api/budgetAPI";
+import "./BudgetTracker.css";
 
 
 export default function BudgetTracker() {
+
 
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -209,9 +212,9 @@ function getBarPercent(budget) {
 
   return (
 
-    <div className="page">
+    <div className="page budget-page">
 
-      <main className="subpage-content">
+      <main className="subpage-content budget-content">
 
 
         <h2>Budget Tracker</h2>
@@ -734,6 +737,7 @@ function getBarPercent(budget) {
 
       </main>
 
+      <Footer />
 
     </div>
 

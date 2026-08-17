@@ -6,8 +6,11 @@ import {
     updateHotel,
     deleteHotel,
 } from '../controllers/adminController.js';
+import { authenticateUser, authorizeAdmin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
+
+router.use(authenticateUser, authorizeAdmin);
 
 // Bookings oversight
 router.get('/bookings', getAllBookings);              // GET    /api/admin/bookings

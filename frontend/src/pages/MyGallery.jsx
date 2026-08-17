@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Stack from '../components/Stack';
 import CommentThread from '../components/CommentThread';
 import { AuthContext } from '../context/AuthContext';
+import Footer from '../components/Footer';
 import {
   getMyGallery,
   uploadPhoto,
@@ -145,7 +146,7 @@ export default function MyGallery() {
   // Not logged in
   if (!authLoading && !user) {
     return (
-      <div className="page">
+      <div className="page mygallery-root">
         <main className="subpage-content mygallery-page">
           <h2>My Gallery</h2>
           <div className="mygallery-login-prompt">
@@ -156,12 +157,14 @@ export default function MyGallery() {
             </button>
           </div>
         </main>
+
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="page">
+    <div className="page mygallery-root">
       <main className="subpage-content mygallery-page">
         <h2>My Gallery</h2>
         <p className="subpage-subtitle">
@@ -367,6 +370,8 @@ export default function MyGallery() {
           </div>
         </div>
       )}
+
+      <Footer />
     </div>
   );
 }

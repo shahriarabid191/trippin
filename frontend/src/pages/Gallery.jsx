@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getPublicGallery, toggleLike } from '../api/galleryAPI';
 import CommentThread from '../components/CommentThread';
 import { AuthContext } from '../context/AuthContext';
+import Footer from '../components/Footer';
 import './Gallery.css';
 
 export default function Gallery() {
@@ -161,6 +162,8 @@ export default function Gallery() {
           </div>
         </div>
       )}
+
+      <Footer />
 
       {selectedPhoto && (
         <div className="gphoto-modal" onClick={closeModal}>

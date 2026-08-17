@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Footer from "../components/Footer";
 
 import {
   getTodos,
@@ -6,9 +7,11 @@ import {
   deleteTodo,
   updateTodo
 } from "../api/todoAPI";
+import "./Todolist.css";
 
 
 export default function TodoList() {
+
 
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState("");
@@ -160,9 +163,9 @@ export default function TodoList() {
 
   return (
 
-    <div className="page">
+    <div className="page todolist-page">
 
-      <main className="subpage-content">
+      <main className="subpage-content todolist-content">
 
 
         <h2>My Todo List</h2>
@@ -429,6 +432,7 @@ export default function TodoList() {
 
       </main>
 
+      <Footer />
 
     </div>
 

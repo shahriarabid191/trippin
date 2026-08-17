@@ -37,12 +37,22 @@ body {
    Dynamic Navbar Styles (Home vs Subpage)
    ========================================================================== */
 .home-navbar {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   padding: 24px 48px;
   z-index: 100;
+  background: transparent;
+  box-shadow: none;
+  transition: background 0.35s ease, box-shadow 0.35s ease, padding 0.35s ease;
+}
+
+.home-navbar-scrolled {
+  background: rgba(11, 30, 48, 0.92);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  padding: 14px 48px;
 }
 
 .subpage-header {
@@ -185,6 +195,9 @@ body {
 .hero {
   position: relative;
   min-height: 760px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 24px 48px 30px;
   background: center / cover no-repeat
     url('https://images.unsplash.com/photo-1471922694854-ff1b63b20054?auto=format&fit=crop&w=1800&q=80');
@@ -193,103 +206,126 @@ body {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(3, 38, 64, 0.55) 20%, rgba(4, 30, 53, 0.15) 60%, rgba(247, 249, 251, 0.9) 100%);
-}
-
-.hero-title-wrap,
-.preview-strip {
-  position: relative;
-  z-index: 1;
+  background: linear-gradient(180deg, rgba(3, 38, 64, 0.6) 0%, rgba(4, 30, 53, 0.35) 55%, rgba(11, 30, 48, 0.98) 100%);
 }
 
 .hero-title-wrap {
+  position: relative;
+  z-index: 1;
   text-align: center;
-  margin-top: 150px; /* Increased to account for the absolute navbar */
+  padding-top: 90px; /* Clears the fixed navbar since content is vertically centered */
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #fff;
+}
+
+.hero-kicker {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #FBBF24;
+  margin-bottom: 18px;
 }
 
 .hero h1 {
-  display: none;
+  margin: 0 0 18px;
+  font-size: clamp(38px, 6vw, 68px);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  font-weight: 800;
 }
 
-/* ==========================================================================
-   Preview Cards Strip
-   ========================================================================== */
-.preview-strip {
-  margin-top: 56px;
+.hero-subtitle {
+  margin: 0 auto;
+  max-width: 520px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.hero-cta-row {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 30px;
 }
 
-.preview-cards {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-}
-
-.preview-card {
-  position: relative;
-  flex: 0 0 136px;
-  height: 190px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #d9eaf7;
-}
-
-.preview-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 35%, rgba(0, 0, 0, 0.7) 100%);
-}
-
-.preview-card p {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  right: 10px;
-  font-size: 12px;
+.hero-cta-secondary {
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  background: transparent;
   color: #fff;
-  margin: 0;
-}
-
-.text-card {
-  display: grid;
-  place-content: center;
-  height: 100%;
-  color: #0c2135;
-  text-align: center;
+  border-radius: 12px;
+  padding: 14px 30px;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
 }
 
-.text-card span {
-  font-size: 12px;
-  font-weight: 500;
-  margin-top: 6px;
+.hero-cta-secondary:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin-top: 40px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hero-stats-divider {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .book-main-btn {
   border: 0;
   background: #fff;
-  color: #081f35;
-  border-radius: 999px;
-  padding: 14px 42px;
+  color: #0b1e30;
+  border-radius: 12px;
+  padding: 14px 32px 14px 42px;
   font-weight: 700;
   letter-spacing: 0.1em;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.book-main-btn:hover {
+  background: #e3f2fd;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.book-main-btn-arrow {
+  font-size: 18px;
+  transition: transform 0.25s ease;
+}
+
+.book-main-btn:hover .book-main-btn-arrow {
+  transform: translateX(4px);
 }
 
 /* ==========================================================================
    Content Sections Layouts
    ========================================================================== */
 .content {
-  background: #f7f9fb;
+  background: #ffffff;
+  color: #16232f;
   margin-top: -2px;
   padding: 44px 48px 64px;
 }
@@ -299,83 +335,7 @@ body {
   font-size: clamp(30px, 4vw, 44px);
   margin: 0 0 28px;
   letter-spacing: 0.08em;
-}
-
-.about-grid {
-  display: grid;
-  grid-template-columns: 0.95fr 1.05fr;
-  gap: 40px;
-}
-
-.about-text {
-  color: #4f5c69;
-  line-height: 1.8;
-  display: grid;
-  gap: 22px;
-}
-
-.about-text span {
-  color: #0f6fb5;
-}
-
-/* Timeline Layout */
-.timeline {
-  position: relative;
-  display: grid;
-  gap: 28px;
-  padding-left: 34px;
-}
-
-.timeline::before {
-  content: '';
-  position: absolute;
-  top: 3px;
-  bottom: 3px;
-  left: 10px;
-  width: 2px;
-  background: #0d79bd;
-}
-
-.timeline-item {
-  position: relative;
-}
-
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: -30px;
-  top: 5px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #fff;
-  border: 2px solid #0d79bd;
-}
-
-.days {
-  display: inline-block;
-  text-transform: uppercase;
-  color: #0c78ba;
-  font-weight: 600;
-  font-size: 12px;
-}
-
-.timeline-item h3 {
-  margin: 6px 0 10px;
-  font-size: 34px;
-  line-height: 1.1;
-}
-
-.timeline-images {
-  display: flex;
-  gap: 8px;
-}
-
-.timeline-images img {
-  width: 86px;
-  height: 64px;
-  border-radius: 8px;
-  object-fit: cover;
+  color: #0b1e30;
 }
 
 /* What's Included */
@@ -390,46 +350,87 @@ body {
 }
 
 .include-card {
-  border: 1px solid #b7d7ef;
+  border: 1px solid rgba(11, 30, 48, 0.12);
   border-radius: 8px;
   padding: 16px;
-  background: #fff;
+  background: rgba(11, 30, 48, 0.03);
 }
 
 .include-card h3 {
   margin: 0 0 10px;
+  color: #0b1e30;
 }
 
 .include-card p {
   margin: 0;
   font-size: 14px;
-  color: #4f5c69;
+  color: rgba(11, 30, 48, 0.65);
   line-height: 1.6;
 }
 
 /* ==========================================================================
    Global Footer Layouts
    ========================================================================== */
-.footer {
-  position: relative;
-  min-height: 520px;
-  padding: 44px 48px 24px;
-  background: center / cover no-repeat
-    url('https://images.unsplash.com/photo-1473773508845-188df298d2d1?auto=format&fit=crop&w=1800&q=80');
+.site-footer {
+  background: #0b1e30;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 32px 48px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  color: #fff;
 }
 
-.footer-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(11, 39, 62, 0.22), rgba(8, 21, 36, 0.78));
+.site-footer-brand {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  font-size: 20px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-.contact-card,
-.footer-bottom {
-  position: relative;
-  z-index: 1;
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
 }
 
+.site-footer-links a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.site-footer-links a:hover {
+  color: #fff;
+}
+
+.site-footer-copyright {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .site-footer {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* ==========================================================================
+   Shared Card Panel (form panels on Vault, Budget, Journal, SOS, Todolist,
+   Admin — not footer-specific despite the name)
+   ========================================================================== */
 .contact-card {
   width: min(100%, 330px);
   border-radius: 12px;
@@ -475,34 +476,6 @@ body {
   background: #fff;
   font-weight: 700;
   cursor: pointer;
-}
-
-.footer-bottom {
-  margin-top: 150px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  color: #fff;
-  border-top: 1px solid rgba(255, 255, 255, 0.35);
-  padding-top: 14px;
-}
-
-.footer-links {
-  display: flex;
-  gap: 24px;
-}
-
-.footer-links a {
-  color: inherit;
-  text-decoration: none;
-  font-size: 15px;
-  opacity: 0.85;
-  transition: opacity 0.2s;
-}
-
-.footer-links a:hover {
-  opacity: 1;
 }
 
 /* ==========================================================================
@@ -734,30 +707,11 @@ body {
   }
 
   .hero-title-wrap {
-    margin-top: 48px;
-  }
-
-  .preview-strip {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .about-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .timeline-item h3 {
-    font-size: 26px;
+    padding-top: 70px;
   }
 
   .include-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .footer-bottom {
-    margin-top: 76px;
-    flex-direction: column;
-    align-items: flex-start;
   }
 }
 
@@ -851,6 +805,17 @@ body {
 
 .auth-button:hover {
   background: #e3f2fd;
+}
+
+.auth-error {
+  background: rgba(186, 26, 26, 0.15);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  color: #ff9b9b;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0 0 16px;
 }
 
 .auth-link {

@@ -10,27 +10,64 @@
 }
 
 .chat-fab {
-  width: 56px;
   height: 56px;
-  border-radius: 50%;
+  min-width: 56px;
+  border-radius: 999px;
   border: none;
-  background: #0d79bd;
+  background: linear-gradient(135deg, #0b1e30, #1b3752);
   color: #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
+  padding: 0 22px 0 18px;
   box-shadow: 0 6px 20px rgba(11, 30, 48, 0.35);
-  transition: transform 0.15s ease, background 0.15s ease;
+  transition: transform 0.15s ease, background 0.25s ease, padding 0.25s ease, width 0.25s ease;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .chat-fab:hover {
-  background: #0f6fb5;
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #14304a, #24547d);
+  transform: scale(1.03);
 }
 
 .chat-fab .material-symbols-outlined {
-  font-size: 26px;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.chat-fab-label {
+  max-width: 140px;
+  opacity: 1;
+  transition: opacity 0.2s ease, max-width 0.25s ease;
+}
+
+.chat-fab-compact {
+  width: 56px;
+  padding: 0;
+  gap: 0;
+}
+
+.chat-fab-compact .chat-fab-label {
+  max-width: 0;
+  opacity: 0;
+}
+
+@media (max-width: 480px) {
+  .chat-fab {
+    width: 56px;
+    padding: 0;
+    gap: 0;
+  }
+
+  .chat-fab .chat-fab-label {
+    display: none;
+  }
 }
 
 .chat-panel {

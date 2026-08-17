@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import PaymentModal from '../components/PaymentModal';
 import { StarRow } from '../components/HotelReviews';
+import Footer from '../components/Footer';
+import './Booking.css';
 
 const NAVY = '#0F172A';
 const GOLD = '#FBBF24';
@@ -54,8 +56,8 @@ export default function Booking() {
   const goToHotel = (hotel, hash = '') => navigate(`/hotels/${hotel.id}${hash}`);
 
   return (
-    <div className="page">
-      <main className="subpage-content" style={{ padding: '40px 24px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="page booking-page">
+      <main className="subpage-content booking-content" style={{ padding: '40px 24px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ marginBottom: '40px' }}>
           <h2 style={{ fontSize: '32px', marginBottom: '8px' }}>Book Your Anchor</h2>
           <p style={{ color: '#4f5c69' }}>Discover pristine escapes handpicked for your next destination.</p>
@@ -203,6 +205,8 @@ export default function Booking() {
           </div>
         )}
       </main>
+
+      <Footer />
 
       {/* Payment / booking modal */}
       {selectedHotel && (
