@@ -49,7 +49,15 @@ export const loginUser = async (req, res) => {
         // 3. Issue JWT via HTTP-Only cookie
         issueAuthCookie(res, user);
 
-        res.status(200).json({ message: 'Logged in successfully', user: { id: user.id, email: user.email, role: user.role } });
+        res.status(200).json({
+            message: 'Logged in successfully',
+            user: {
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                role: user.role
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error' });
@@ -67,12 +75,16 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ error: 'Email is already registered' });
         }
 
-        // 2. Securely hash the password
+        // 2. If an admin code was submitted, it must be correct — reject
+        // rather than silently falling back to a regular user account.
+        if (adminCode && adminCode !== process.env.ADMIN_CODE) {
+            return res.status(400).json({ error: 'Invalid admin code' });
+        }
+        const role = adminCode ? 'admin' : 'user';
+
+        // 3. Securely hash the password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-
-
-        const role = adminCode === process.env.ADMIN_CODE ? 'admin' : 'user';
 
         // 4. Save to Database
         const user = await createUser(email, hashedPassword, role);
@@ -80,7 +92,15 @@ export const registerUser = async (req, res) => {
         // 5. Issue JWT Cookie so they are instantly logged in
         issueAuthCookie(res, user);
 
-        res.status(201).json({ message: 'User registered', user: { id: user.id, email: user.email, role: user.role } });
+        res.status(201).json({
+            message: 'User registered',
+            user: {
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                role: user.role
+            }
+        });
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ error: 'Server error during registration' });
@@ -98,6 +118,7 @@ export const getMe = async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
+                username: user.username,
                 role: user.role
             }
         });

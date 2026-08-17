@@ -3,9 +3,16 @@
    theme: navy #0b1e30/#0c2135, accent #0d79bd, light blue #b7d7ef/#e3f2fd
    ========================================================================== */
 
+.mygallery-root {
+  display: flex;
+  flex-direction: column;
+}
+
 .mygallery-page {
   display: flex;
   flex-direction: column;
+  flex: 1 0 auto;
+  width: 100%;
 }
 
 .mygallery-loading {

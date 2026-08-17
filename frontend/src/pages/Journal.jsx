@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Footer from "../components/Footer";
 
 import {
   getJournals,
@@ -7,9 +8,11 @@ import {
   deleteJournal,
   updateJournal
 } from "../api/journalAPI";
+import "./Journal.css";
 
 
 export default function Journal() {
+
 
   const [journals, setJournals] = useState([]);
   const [title, setTitle] = useState("");
@@ -154,9 +157,9 @@ export default function Journal() {
 
   return (
 
-    <div className="page">
+    <div className="page journal-page">
 
-      <main className="subpage-content">
+      <main className="subpage-content journal-content">
 
 
         <h2>Travel Journal</h2>
@@ -527,6 +530,7 @@ export default function Journal() {
 
       </main>
 
+      <Footer />
 
     </div>
 

@@ -6,8 +6,6 @@
 .gallery-page {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 68px);
-  overflow: hidden;
 }
 
 .gallery-topbar {
@@ -32,7 +30,8 @@
 
 /* ---------- Loading / empty ---------- */
 .gallery-state {
-  flex: 1;
+  height: 70vh;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -90,7 +89,8 @@
 
 /* ---------- Flat draggable photo wall ---------- */
 .photowall-viewport {
-  flex: 1;
+  height: 70vh;
+  flex-shrink: 0;
   overflow-x: auto;
   overflow-y: hidden;
   background: #0b1e30;

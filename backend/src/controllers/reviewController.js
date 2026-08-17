@@ -17,6 +17,26 @@ export const getReviewsByHotel = async (req, res) => {
     }
 };
 
+// GET /api/reviews/highlights
+// Public: best real guest reviews across all hotels, for homepage testimonials.
+export const getFeaturedReviews = async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT r.id, r.rating, r.comment, r.user_email, r.created_at,
+                    h.name AS hotel_name
+             FROM reviews r
+             JOIN hotels h ON h.id = r.hotel_id
+             WHERE r.rating >= 4 AND r.comment <> ''
+             ORDER BY r.rating DESC, r.created_at DESC
+             LIMIT 6`
+        );
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error('Error fetching featured reviews:', error);
+        res.status(500).json({ error: 'Server error fetching featured reviews' });
+    }
+};
+
 // POST /api/reviews
 // Requires: hotel_id, user_email, rating (1-5), comment
 export const addReview = async (req, res) => {
