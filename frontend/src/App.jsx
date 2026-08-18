@@ -16,6 +16,7 @@ import MyGallery from './pages/MyGallery';
 import Journal from "./pages/Journal";
 import BudgetTracker from "./pages/BudgetTracker";
 import Translate from "./pages/Translate";
+import SimShops from "./pages/SimShops";
 import './App.css';
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           <Route path="/journal" element={<Journal />} />
           <Route path="/budget" element={<BudgetTracker />} />
           <Route path="/translate" element={<Translate />} />
+          <Route path="/sim-shops" element={<SimShops />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
