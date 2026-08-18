@@ -16,6 +16,7 @@ import MyGallery from './pages/MyGallery';
 import Journal from "./pages/Journal";
 import BudgetTracker from "./pages/BudgetTracker";
 import Translate from "./pages/Translate";
+import TravelBuddies from "./pages/Buddy";
 import './App.css';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
           <Route path="/vault" element={<Vault />} />
           <Route path="/todos" element={<TodoList />} />
           <Route path="/sos" element={<SOS />}/>
+          <Route path="/travel-buddies" element={<TravelBuddies />} />
           <Route path="/journal" element={<Journal />} />
           <Route path="/budget" element={<BudgetTracker />} />
           <Route path="/translate" element={<Translate />} />
