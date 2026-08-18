@@ -1,9 +1,3 @@
-/* ==========================================================================
-   CommentThread — shared by the public Gallery modal and the My Gallery
-   floating bubble. Colours come from custom properties so the same markup
-   can sit on a white card or on the frosted-glass panel; the glass version
-   only has to override these four values.
-   ========================================================================== */
 
 .ct-root {
   --ct-text: #0c2135;
