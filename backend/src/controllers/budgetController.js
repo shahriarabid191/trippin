@@ -8,12 +8,17 @@ export const getBudgets = async (req, res) => {
 
     try {
 
-        const budgets = await Budget.getBudgetsByUserID(req.user.id);
+        const budgets =
+            await Budget.getBudgetsByUserID(
+                req.user.id
+            );
 
         res.json(budgets);
 
     }
     catch (error) {
+
+        console.error(error);
 
         res.status(500).json({
             message: "Server error"
@@ -25,26 +30,43 @@ export const getBudgets = async (req, res) => {
 
 
 
-// GET /api/budgets/:id  (includes its expenses)
+// GET /api/budgets/:id
 
 export const getBudget = async (req, res) => {
 
     try {
 
-        const budget = await Budget.getBudgetById(req.params.id, req.user.id);
+        const budget =
+            await Budget.getBudgetById(
+                req.params.id,
+                req.user.id
+            );
 
         if (!budget) {
+
             return res.status(404).json({
                 message: "Budget not found"
             });
+
         }
 
-        const expenses = await Expense.getExpensesByBudgetID(req.params.id, req.user.id);
 
-        res.json({ ...budget, expenses });
+        const expenses =
+            await Expense.getExpensesByBudgetID(
+                req.params.id,
+                req.user.id
+            );
+
+
+        res.json({
+            ...budget,
+            expenses
+        });
 
     }
     catch (error) {
+
+        console.error(error);
 
         res.status(500).json({
             message: "Server error"
@@ -60,18 +82,45 @@ export const getBudget = async (req, res) => {
 
 export const createBudget = async (req, res) => {
 
-    const budget = await Budget.addBudget({
-        tripName: req.body.tripName,
-        budgetType: req.body.budgetType,
-        amount: req.body.amount,
-        userID: req.user.id
-    });
+    try {
 
-    res.status(201)
-        .json({
+        const budget =
+            await Budget.addBudget({
+
+                tripName: req.body.tripName,
+
+                budgetType: req.body.budgetType,
+
+                amount: req.body.amount,
+
+                visibility:
+                    req.body.visibility || "PRIVATE",
+
+                userID: req.user.id
+
+            });
+
+
+        res.status(201).json({
+
             message: "Budget created",
+
             budget
+
         });
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            message: "Server error"
+
+        });
+
+    }
 
 };
 
@@ -81,25 +130,49 @@ export const createBudget = async (req, res) => {
 
 export const editBudget = async (req, res) => {
 
-    const updated =
-        await Budget.updateBudget(
-            req.params.id,
-            req.user.id,
-            req.body
-        );
+    try {
+
+        const updated =
+            await Budget.updateBudget(
+
+                req.params.id,
+
+                req.user.id,
+
+                req.body
+
+            );
 
 
-    if (updated === 0) {
-        return res.status(404)
-            .json({
+        if (updated === 0) {
+
+            return res.status(404).json({
+
                 message: "Budget not found"
+
             });
+
+        }
+
+
+        res.json({
+
+            message: "Updated successfully"
+
+        });
+
     }
+    catch (error) {
 
+        console.error(error);
 
-    res.json({
-        message: "Updated successfully"
-    });
+        res.status(500).json({
+
+            message: "Server error"
+
+        });
+
+    }
 
 };
 
@@ -109,24 +182,47 @@ export const editBudget = async (req, res) => {
 
 export const removeBudget = async (req, res) => {
 
-    const deleted =
-        await Budget.deleteBudget(
-            req.params.id,
-            req.user.id
-        );
+    try {
+
+        const deleted =
+            await Budget.deleteBudget(
+
+                req.params.id,
+
+                req.user.id
+
+            );
 
 
-    if (deleted === 0) {
-        return res.status(404)
-            .json({
+        if (deleted === 0) {
+
+            return res.status(404).json({
+
                 message: "Budget not found"
+
             });
+
+        }
+
+
+        res.json({
+
+            message: "Deleted successfully"
+
+        });
+
     }
+    catch (error) {
 
+        console.error(error);
 
-    res.json({
-        message: "Deleted successfully"
-    });
+        res.status(500).json({
+
+            message: "Server error"
+
+        });
+
+    }
 
 };
 
@@ -136,19 +232,44 @@ export const removeBudget = async (req, res) => {
 
 export const createExpense = async (req, res) => {
 
-    const expense = await Expense.addExpense({
-        budgetID: req.params.id,
-        category: req.body.category,
-        description: req.body.description,
-        amount: req.body.amount,
-        userID: req.user.id
-    });
+    try {
 
-    res.status(201)
-        .json({
+        const expense =
+            await Expense.addExpense({
+
+                budgetID: req.params.id,
+
+                category: req.body.category,
+
+                description: req.body.description,
+
+                amount: req.body.amount,
+
+                userID: req.user.id
+
+            });
+
+
+        res.status(201).json({
+
             message: "Expense added",
+
             expense
+
         });
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            message: "Server error"
+
+        });
+
+    }
 
 };
 
@@ -158,23 +279,46 @@ export const createExpense = async (req, res) => {
 
 export const removeExpense = async (req, res) => {
 
-    const deleted =
-        await Expense.deleteExpense(
-            req.params.expenseId,
-            req.user.id
-        );
+    try {
+
+        const deleted =
+            await Expense.deleteExpense(
+
+                req.params.expenseId,
+
+                req.user.id
+
+            );
 
 
-    if (deleted === 0) {
-        return res.status(404)
-            .json({
+        if (deleted === 0) {
+
+            return res.status(404).json({
+
                 message: "Expense not found"
+
             });
+
+        }
+
+
+        res.json({
+
+            message: "Deleted successfully"
+
+        });
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            message: "Server error"
+
+        });
+
     }
 
-
-    res.json({
-        message: "Deleted successfully"
-    });
-
-}; 
+};

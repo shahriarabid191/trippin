@@ -36,6 +36,24 @@ export const getUserByUsername = async (username) => {
 
 };
 
+
+// Search users by username
+export const searchUsersByUsername = async (username, userId) => {
+
+    const result = await pool.query(
+        `
+        SELECT id, username
+        FROM users
+        WHERE username ILIKE $1
+        AND id != $2
+        ORDER BY username
+        LIMIT 10
+        `,
+        [`%${username}%`, userId]
+    );
+
+    return result.rows;
+};
 // Insert a new user into the database
 export const createUser = async (email, hashedPassword, role) => {
 

@@ -240,6 +240,10 @@ export default function Navbar() {
                       <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>image</span> My Gallery
                     </button>
 
+                    <button className="profile-dropdown-item" onClick={() => { navigate('/travel-buddies'); setProfileOpen(false); }}>
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>group</span> Travel Buddies
+                    </button>
+
                     <div className="profile-dropdown-divider" />
 
                     <button className="profile-dropdown-item" onClick={async () => {
