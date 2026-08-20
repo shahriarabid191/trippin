@@ -13,6 +13,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import TodoList from "./pages/Todolist";
 import Journal from "./pages/Journal";
 import BudgetTracker from "./pages/BudgetTracker";
+import BookGuide from "./pages/BookGuide";
 import MyGallery from './pages/MyGallery';
 import './App.css';
 
@@ -34,6 +35,7 @@ function App() {
           <Route path="/todos" element={<TodoList />} />
           <Route path="/journal" element={<Journal />} />
           <Route path="/budget" element={<BudgetTracker />} />
+          <Route path="/guides" element={<BookGuide />} /> 
           <Route path="/signup" element={<Signup />} />
          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
