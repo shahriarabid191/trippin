@@ -4,7 +4,9 @@ import db from "../config/db.js";
 export const getBookingsByUserID = async (userID) => {
     const result = await db.query(
         `
-        SELECT gb.*, g.name AS guide_name, g.location, g.price_per_day
+        SELECT gb.id, gb.guide_id, gb.user_id, gb.status, gb.notes, gb.created_at,
+            gb.booking_date::date::text AS booking_date,
+            g.name AS guide_name, g.location, g.price_per_day
         FROM guide_bookings gb
         JOIN guides g ON g.id = gb.guide_id
         WHERE gb.user_id=$1
@@ -13,7 +15,7 @@ export const getBookingsByUserID = async (userID) => {
         [userID]
     );
     return result.rows;
-};
+}; 
 
 // Add a booking
 export const addBooking = async (booking) => {
@@ -21,7 +23,8 @@ export const addBooking = async (booking) => {
         `
         INSERT INTO guide_bookings(guide_id, user_id, booking_date, notes)
         VALUES($1,$2,$3,$4)
-        RETURNING *
+        RETURNING id, guide_id, user_id, status, notes, created_at,
+            booking_date::date::text AS booking_date
         `,
         [booking.guideID, booking.userID, booking.bookingDate, booking.notes]
     );
