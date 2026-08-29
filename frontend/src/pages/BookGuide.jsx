@@ -632,6 +632,28 @@ export default function BookGuide() {
                 >
 
 
+             {
+              guide.photo_url &&
+
+             <img
+              src={guide.photo_url}
+              alt={guide.name}
+              style={{
+              width:"100%",
+              height:"220px",
+              objectFit:"contain",
+             
+              borderRadius:"8px",
+              marginBottom:"12px", 
+              
+              
+              
+           }}
+         />
+        }
+
+
+
 
                   <div
                     style={{
