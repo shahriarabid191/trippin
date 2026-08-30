@@ -82,7 +82,8 @@ export default function Navbar() {
     { path: '/itinerary', label: 'Itinerary' },
     { path: '/vault', label: 'Vault' },
     { path: '/gallery', label: 'Gallery' },
-    { path: '/translate', label: 'Translate' }
+    { path: '/translate', label: 'Translate' },
+    { path: '/sim-shops', label: 'SIM / eSIM' }
   ];
 
   const isHome = location.pathname === '/';

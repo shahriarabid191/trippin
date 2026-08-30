@@ -19,6 +19,7 @@ import Translate from "./pages/Translate";
 import TravelBuddies from "./pages/Buddy";
 import BookGuide from "./pages/BookGuide";
 import BookCar from "./pages/BookCar";
+import SimShops from "./pages/SimShops";
 import './App.css';
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
           <Route path="/translate" element={<Translate />} />
           <Route path="/guides" element={<BookGuide />} /> 
           <Route path="/cars" element={<BookCar />} />
+          <Route path="/sim-shops" element={<SimShops />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
