@@ -18,8 +18,7 @@ import BudgetTracker from "./pages/BudgetTracker";
 import Translate from "./pages/Translate";
 import TravelBuddies from "./pages/Buddy";
 import BookGuide from "./pages/BookGuide";
-import BookCar from "./pages/BookCar"; 
-import MyGallery from './pages/MyGallery';
+import BookCar from "./pages/BookCar";
 import './App.css';
 
 function App() {
