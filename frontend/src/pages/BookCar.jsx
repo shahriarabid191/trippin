@@ -8,7 +8,11 @@ import {
   deleteCar,
   bookCar,
   getMyBookings,
-  cancelBooking
+  cancelBooking,
+  getCarReviews,
+  getAllCarRatings,
+  submitCarReview,
+  deleteCarReview
 } from "../api/carAPI";
 
 
@@ -37,9 +41,16 @@ export default function BookCar() {
   const [bookingNotes, setBookingNotes] = useState("");
   const [bookingError, setBookingError] = useState("");
 
+  const [ratings, setRatings] = useState({});
+  const [reviewCarID, setReviewCarID] = useState(null);
+  const [carReviews, setCarReviews] = useState([]);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewError, setReviewError] = useState("");
 
 
-  async function loadCars() {
+
+    async function loadCars() {
 
     try {
 
@@ -48,6 +59,21 @@ export default function BookCar() {
       const data = await getCars();
 
       setCars(Array.isArray(data) ? data : []);
+
+
+      const ratingData = await getAllCarRatings();
+
+      const ratingMap = {};
+
+      if(Array.isArray(ratingData)) {
+
+        ratingData.forEach(r => {
+          ratingMap[r.car_id] = r;
+        });
+
+      }
+
+      setRatings(ratingMap);
 
     }
     catch(error) {
@@ -194,6 +220,78 @@ export default function BookCar() {
   async function removeCar(id) {
 
     await deleteCar(id);
+
+    loadCars();
+
+  }
+
+
+
+  async function openReviews(car) {
+
+    setReviewCarID(car.id);
+
+    setReviewRating(5);
+
+    setReviewComment("");
+
+    setReviewError("");
+
+
+    const data = await getCarReviews(car.id);
+
+    setCarReviews(data.reviews || []);
+
+  }
+
+
+
+
+
+  async function submitReview() {
+
+    const result = await submitCarReview(
+      reviewCarID,
+      {
+        rating: reviewRating,
+        comment: reviewComment
+      }
+    );
+
+
+    if(result.message && result.message.includes("already reviewed")) {
+
+      setReviewError(result.message);
+
+      return;
+
+    }
+
+
+    setReviewComment("");
+
+    setReviewRating(5);
+
+
+    const data = await getCarReviews(reviewCarID);
+
+    setCarReviews(data.reviews || []);
+
+    loadCars();
+
+  }
+
+
+
+
+
+  async function removeReview(reviewId) {
+
+    await deleteCarReview(reviewId);
+
+    const data = await getCarReviews(reviewCarID);
+
+    setCarReviews(data.reviews || []);
 
     loadCars();
 
@@ -516,8 +614,189 @@ export default function BookCar() {
 
 
 
+        {/* Review modal — now independent of bookingCar */}
+        {
+          reviewCarID &&
+
+          <div
+            className="contact-card"
+            style={{
+              width:"100%",
+              maxWidth:"800px",
+              background:"#0b1e30",
+              border:"1px solid #b7d7ef",
+              marginBottom:"24px"
+            }}
+          >
+
+            <h3
+              style={{
+                color:"#fff",
+                fontSize:"24px",
+                marginBottom:"16px"
+              }}
+            >
+              Reviews
+            </h3>
 
 
+
+            <div style={{ marginBottom:"16px" }}>
+
+              <label style={{ color:"#b7d7ef", display:"block", marginBottom:"8px" }}>
+                Your rating
+              </label>
+
+              <div style={{ display:"flex", gap:"6px", marginBottom:"12px" }}>
+
+                {
+                  [1,2,3,4,5].map(star => (
+
+                    <span
+                      key={star}
+                      onClick={() => setReviewRating(star)}
+                      style={{
+                        fontSize:"28px",
+                        cursor:"pointer",
+                        color: star <= reviewRating ? "#f5c518" : "#4f5c69"
+                      }}
+                    >
+                      ★
+                    </span>
+
+                  ))
+                }
+
+              </div>
+
+
+
+              <textarea
+                placeholder="Write your review..."
+                value={reviewComment}
+                onChange={(e)=>setReviewComment(e.target.value)}
+                rows={3}
+                style={{
+                  width:"100%",
+                  padding:"12px",
+                  marginBottom:"12px",
+                  borderRadius:"8px",
+                  border:"1px solid #4f5c69",
+                  background:"#1b2f42",
+                  color:"#fff",
+                  resize:"vertical"
+                }}
+              />
+
+
+
+              {
+                reviewError &&
+
+                <p style={{ color:"#e05252", marginBottom:"12px" }}>
+                  {reviewError}
+                </p>
+
+              }
+
+
+
+              <button
+                onClick={submitReview}
+                style={{
+                  padding:"10px 20px",
+                  borderRadius:"8px",
+                  border:"none",
+                  background:"#fff",
+                  color:"#0b1e30",
+                  fontWeight:"bold",
+                  cursor:"pointer"
+                }}
+              >
+                Submit Review
+              </button>
+
+
+
+              <button
+                onClick={() => setReviewCarID(null)}
+                style={{
+                  marginLeft:"12px",
+                  padding:"10px 20px",
+                  borderRadius:"8px",
+                  border:"none",
+                  cursor:"pointer"
+                }}
+              >
+                Close
+              </button>
+
+            </div>
+
+
+
+            {
+              carReviews.map(review => (
+
+                <div
+                  key={review.id}
+                  style={{
+                    padding:"12px",
+                    marginBottom:"8px",
+                    background:"#1b2f42",
+                    borderRadius:"8px"
+                  }}
+                >
+
+                  <p style={{ color:"#f5c518", margin:"0 0 4px 0" }}>
+                    {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}
+                    {" "}— {review.user_name}
+                  </p>
+
+                  {
+                    review.comment &&
+
+                    <p style={{ color:"#b7d7ef", margin:0 }}>
+                      {review.comment}
+                    </p>
+
+                  }
+
+
+
+                  {
+                    user && review.user_id === user.id &&
+
+                    <button
+                      onClick={() => removeReview(review.id)}
+                      style={{
+                        marginTop:"8px",
+                        padding:"6px 12px",
+                        borderRadius:"6px",
+                        border:"none",
+                        cursor:"pointer",
+                        fontSize:"12px"
+                      }}
+                    >
+                      Delete my review
+                    </button>
+
+                  }
+
+
+                </div>
+
+              ))
+            }
+
+
+          </div>
+
+        }
+
+
+
+        {/* Booking form — separate from review modal */}
         {
           bookingCar &&
 
@@ -821,6 +1100,31 @@ export default function BookCar() {
                   <p style={{ color:"#fff", fontWeight:"bold", margin:"8px 0" }}>
                     ${Number(car.price_per_day).toFixed(2)} / day
                   </p>
+
+                  <p style={{ color:"#f5c518", margin:"4px 0" }}>
+                    {
+                      ratings[car.id] && Number(ratings[car.id].review_count) > 0
+                      ? `★ ${ratings[car.id].avg_rating} (${ratings[car.id].review_count} review${ratings[car.id].review_count > 1 ? "s" : ""})`
+                      : "No reviews yet"
+                    }
+                  </p>
+
+
+
+                  <button
+                    onClick={() => openReviews(car)}
+                    style={{
+                      padding:"8px 16px",
+                      borderRadius:"8px",
+                      border:"1px solid #b7d7ef",
+                      background:"transparent",
+                      color:"#fff",
+                      cursor:"pointer",
+                      marginBottom:"8px"
+                    }}
+                  >
+                    See Reviews / Write a Review
+                  </button>
 
 
 

@@ -8,9 +8,13 @@ import {
     removeCar,
     getMyBookings,
     bookCar,
-    cancelBooking
+    cancelBooking,
+    getCarReviews,
+    getAllCarRatings,
+    createCarReview,
+    removeCarReview
 
-} from "../controllers/carController.js";
+} from "../controllers/carController.js"; 
 
 import { authenticateUser, authorizeAdmin } from "../middlewares/authMiddleware.js";
 
@@ -32,6 +36,41 @@ router.get(
     authenticateUser,
     getMyBookings
 );
+
+// GET /api/cars/ratings/all  (must come before /:id)
+router.get(
+    "/ratings/all",
+    authenticateUser,
+    getAllCarRatings
+);
+
+
+// GET /api/cars/:id/reviews
+router.get(
+    "/:id/reviews",
+    authenticateUser,
+    getCarReviews
+);
+
+
+// POST /api/cars/:id/reviews
+router.post(
+    "/:id/reviews",
+    authenticateUser,
+    createCarReview
+);
+
+
+// DELETE /api/cars/reviews/:reviewId
+router.delete(
+    "/reviews/:reviewId",
+    authenticateUser,
+    removeCarReview
+);  
+
+
+
+
 
 
 // GET /api/cars/:id

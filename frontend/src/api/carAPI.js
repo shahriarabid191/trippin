@@ -135,3 +135,68 @@ export async function cancelBooking(bookingId){
     return response.json();
 
 } 
+
+
+export async function getCarReviews(id){
+
+    const response = await fetch(
+        `${API_URL}/${id}/reviews`,
+        {
+            credentials:"include"
+        }
+    );
+
+    return response.json();
+
+}
+
+
+
+export async function getAllCarRatings(){
+
+    const response = await fetch(
+        `${API_URL}/ratings/all`,
+        {
+            credentials:"include"
+        }
+    );
+
+    return response.json();
+
+}
+
+
+
+export async function submitCarReview(id,review){
+
+    const response = await fetch(
+        `${API_URL}/${id}/reviews`,
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            credentials:"include",
+            body:JSON.stringify(review)
+        }
+    );
+
+    return response.json();
+
+}
+
+
+
+export async function deleteCarReview(reviewId){
+
+    const response = await fetch(
+        `${API_URL}/reviews/${reviewId}`,
+        {
+            method:"DELETE",
+            credentials:"include"
+        }
+    );
+
+    return response.json();
+
+}

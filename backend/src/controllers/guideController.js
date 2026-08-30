@@ -1,5 +1,6 @@
 import * as Guide from "../models/guideModel.js";
 import * as GuideBooking from "../models/guideBookingModel.js";
+import * as GuideReview from "../models/guideReviewModel.js"; 
 
 
 // GET /api/guides  (public browse list)
@@ -14,6 +15,8 @@ export const getGuides = async (req, res) => {
 
     }
     catch (error) {
+
+        console.error(error);
 
         res.status(500).json({
             message: "Server error"
@@ -195,6 +198,122 @@ export const cancelBooking = async (req, res) => {
 
     res.json({
         message: "Booking cancelled"
+    });
+
+}; 
+
+// GET /api/guides/:id/reviews
+
+export const getGuideReviews = async (req, res) => {
+
+    try {
+
+        const reviews = await GuideReview.getReviewsByGuideID(req.params.id);
+
+        const summary = await GuideReview.getRatingSummary(req.params.id);
+
+        res.json({
+            reviews,
+            avgRating: summary.avg_rating,
+            reviewCount: summary.review_count
+        });
+
+    }
+    catch (error) {
+        console.error(error.message); 
+
+        res.status(500).json({
+            message: "Server error"
+        });
+
+    }
+
+};
+
+
+
+// GET /api/guides/ratings/all  (for browse list)
+
+export const getAllGuideRatings = async (req, res) => {
+
+    try {
+
+        const summaries = await GuideReview.getAllRatingSummaries();
+
+        res.json(summaries);
+
+    }
+    catch (error) {
+
+        res.status(500).json({
+            message: "Server error"
+        });
+
+    }
+
+};
+
+
+
+// POST /api/guides/:id/reviews
+
+export const createGuideReview = async (req, res) => {
+
+    try {
+
+        const review = await GuideReview.addReview({
+            guideID: req.params.id,
+            userID: req.user.id,
+            rating: req.body.rating,
+            comment: req.body.comment
+        });
+
+        res.status(201)
+            .json({
+                message: "Review submitted",
+                review
+            });
+
+    }
+    catch (error) {
+
+        if (error.code === '23505') {
+            return res.status(400).json({
+                message: "You already reviewed this guide"
+            });
+        }
+
+        res.status(500).json({
+            message: "Server error"
+        });
+
+    }
+
+};
+
+
+
+// DELETE /api/guides/reviews/:reviewId
+
+export const removeGuideReview = async (req, res) => {
+
+    const deleted =
+        await GuideReview.deleteReview(
+            req.params.reviewId,
+            req.user.id
+        );
+
+
+    if (deleted === 0) {
+        return res.status(404)
+            .json({
+                message: "Review not found"
+            });
+    }
+
+
+    res.json({
+        message: "Deleted successfully"
     });
 
 }; 
