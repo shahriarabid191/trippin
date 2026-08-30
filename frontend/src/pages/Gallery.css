@@ -247,6 +247,9 @@
 .gphoto-card {
   position: relative;
   width: min(100%, 440px);
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
   background: #fff;
   border-radius: 20px;
   overflow: hidden;
@@ -284,6 +287,7 @@
 .gphoto-image {
   width: 100%;
   aspect-ratio: 4 / 3;
+  flex-shrink: 0;
   background: #0b1e30;
 }
 
@@ -295,10 +299,16 @@
 }
 
 .gphoto-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
   padding: 20px 22px 24px;
 }
 
 .gphoto-caption {
+  flex-shrink: 0;
   margin: 0 0 16px;
   font-size: 17px;
   line-height: 1.5;
@@ -314,6 +324,7 @@
 }
 
 .gphoto-meta {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -381,6 +392,60 @@
 
 .gphoto-heart.liked .material-symbols-outlined {
   color: #e0245e;
+}
+
+/* Comment toggle — same footprint as the heart, sat right beside it. */
+.gphoto-comment-btn {
+  border: none;
+  background: #f7f9fb;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.gphoto-comment-btn:hover {
+  background: #e3f2fd;
+  transform: scale(1.08);
+}
+
+.gphoto-comment-btn.open {
+  background: #0d79bd;
+}
+
+.gphoto-comment-btn .material-symbols-outlined {
+  font-size: 24px;
+  color: #8da2b5;
+  transition: color 0.2s;
+}
+
+.gphoto-comment-btn.open .material-symbols-outlined {
+  color: #fff;
+}
+
+/* The thread drops in below the meta row; the card itself never grows past
+   the viewport, so the list scrolls inside this box. */
+.gphoto-comments {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e3f2fd;
+  display: flex;
+  max-height: 46vh;
+  animation: gphoto-comments-in 0.2s ease-out;
+}
+
+.gphoto-comments .ct-root {
+  flex: 1;
+  min-height: 0;
+}
+
+@keyframes gphoto-comments-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .gphoto-error {

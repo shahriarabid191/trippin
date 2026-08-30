@@ -30,3 +30,27 @@ CREATE TABLE IF NOT EXISTS gallery_likes (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (photo_id, user_id)
 );
+
+-- Comments on a photo. parent_id NULL = a top-level comment; otherwise it
+-- points at the comment being replied to (one level of nesting — replies to
+-- a reply are re-parented onto the same thread root by the controller).
+CREATE TABLE IF NOT EXISTS gallery_comments (
+  id SERIAL PRIMARY KEY,
+  photo_id INTEGER NOT NULL REFERENCES gallery_photos(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  parent_id INTEGER REFERENCES gallery_comments(id) ON DELETE CASCADE,
+  body VARCHAR(500) NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS gallery_comments_photo_idx
+  ON gallery_comments (photo_id, created_at);
+
+-- One heart per user per comment.
+CREATE TABLE IF NOT EXISTS gallery_comment_likes (
+  id SERIAL PRIMARY KEY,
+  comment_id INTEGER NOT NULL REFERENCES gallery_comments(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (comment_id, user_id)
+);

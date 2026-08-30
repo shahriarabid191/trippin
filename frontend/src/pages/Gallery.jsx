@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getPublicGallery, toggleLike } from '../api/galleryAPI';
+import CommentThread from '../components/CommentThread';
 import { AuthContext } from '../context/AuthContext';
 import Footer from '../components/Footer';
 import './Gallery.css';
@@ -13,6 +14,7 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState(null);
   const [likeError, setLikeError] = useState(null);
+  const [showComments, setShowComments] = useState(false);
 
   // Drag-to-pan state for the horizontal photo wall
   const scrollerRef = useRef(null);
@@ -61,12 +63,21 @@ export default function Gallery() {
     if (dragRef.current.moved) return;
     setSelectedId(photo.id);
     setLikeError(null);
+    setShowComments(false);
   }
 
   function closeModal() {
     setSelectedId(null);
     setLikeError(null);
+    setShowComments(false);
   }
+
+  // Keep the button's badge in step with what the thread actually holds.
+  const handleCommentCount = useCallback((count) => {
+    setPhotos((prev) =>
+      prev.map((p) => (p.id === selectedId ? { ...p, commentCount: count } : p))
+    );
+  }, [selectedId]);
 
   async function handleHeart() {
     if (!user) {
@@ -192,10 +203,32 @@ export default function Gallery() {
                       favorite
                     </span>
                   </button>
+
+                  <span className="gphoto-like-count">{selectedPhoto.commentCount}</span>
+                  <button
+                    className={`gphoto-comment-btn ${showComments ? 'open' : ''}`}
+                    onClick={() => setShowComments((v) => !v)}
+                    aria-label={showComments ? 'Hide comments' : 'Show comments'}
+                    aria-expanded={showComments}
+                    title="Comments"
+                  >
+                    <span className="material-symbols-outlined">chat_bubble</span>
+                  </button>
                 </div>
               </div>
 
               {likeError && <p className="gphoto-error">{likeError}</p>}
+
+              {showComments && (
+                <div className="gphoto-comments">
+                  <CommentThread
+                    photoId={selectedPhoto.id}
+                    canPost={!!user}
+                    canModerate={selectedPhoto.isMine}
+                    onCountChange={handleCommentCount}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
