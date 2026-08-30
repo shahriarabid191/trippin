@@ -4,12 +4,14 @@ import { AuthContext } from '../context/AuthContext';
 
 import NotificationDropdown from "./NotificationDropdown";
 import { getReceivedAlerts } from "../api/sosAlertAPI";
+import { getUnreadChatMessages } from "../api/buddyChatAPI";
 
 
 export default function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [alertCount, setAlertCount] = useState(0);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [chatNotifs, setChatNotifs] = useState([]);
   const profileRef = useRef(null);
   const notificationRef = useRef(null);
   const navigate = useNavigate();
@@ -47,22 +49,22 @@ export default function Navbar() {
 
     try {
 
-      const data = await getReceivedAlerts();
+      const [sosData, chatData] = await Promise.all([
+        getReceivedAlerts().catch(() => ({ alerts: [] })),
+        getUnreadChatMessages().catch(() => [])
+      ]);
 
-      const alerts = data.alerts || data;
+      const sosAlerts = sosData.alerts || sosData || [];
+      const unreadSOS = sosAlerts.filter(a => !a.acked).length;
 
-      const unread = alerts.filter(
-        alert => !alert.acked
-      );
+      setChatNotifs(chatData);
+      const totalChatUnread = chatData.reduce((sum, n) => sum + n.unread_count, 0);
 
-      setAlertCount(unread.length);
+      setAlertCount(unreadSOS + totalChatUnread);
 
     } catch (error) {
 
-      console.error(
-        "Failed to load alert count",
-        error
-      );
+      console.error('Failed to load alert count', error);
 
     }
 
@@ -72,6 +74,10 @@ export default function Navbar() {
   useEffect(() => {
 
     loadAlertCount();
+
+    // Poll for new chat messages every 10 seconds
+    const interval = setInterval(loadAlertCount, 10000);
+    return () => clearInterval(interval);
 
   }, []);
 
@@ -197,7 +203,7 @@ export default function Navbar() {
                       zIndex: 9999
                     }}
                   >
-                    <NotificationDropdown refreshCount={loadAlertCount} />
+                  <NotificationDropdown refreshCount={loadAlertCount} chatNotifs={chatNotifs} />
                   </div>
                 )}
 

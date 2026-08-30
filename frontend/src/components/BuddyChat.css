@@ -1,0 +1,433 @@
+/* ================================================================
+   BuddyChat — slide-in peer chat panel
+   ================================================================ */
+
+/* Overlay backdrop */
+.buddy-chat-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 24px;
+    animation: bc-fade-in 0.22s ease;
+}
+
+@keyframes bc-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Main panel */
+.buddy-chat-panel {
+    width: 420px;
+    max-width: calc(100vw - 48px);
+    height: 620px;
+    max-height: calc(100vh - 100px);
+    background: #0d1f30;
+    border: 1px solid rgba(99, 179, 237, 0.25);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(99, 179, 237, 0.1);
+    animation: bc-slide-up 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes bc-slide-up {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+.buddy-chat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #0b1e30 0%, #122a40 100%);
+    border-bottom: 1px solid rgba(99, 179, 237, 0.15);
+    flex-shrink: 0;
+}
+
+.buddy-chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.3);
+}
+
+.buddy-chat-header-info { flex: 1; min-width: 0; }
+
+.buddy-chat-header-name {
+    color: #e2f0ff;
+    font-weight: 700;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.buddy-chat-header-status {
+    color: #4ade80;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.buddy-chat-header-status::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 6px #4ade80;
+}
+
+.buddy-chat-close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.07);
+    color: #94a3b8;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+
+.buddy-chat-close-btn:hover {
+    background: rgba(239, 68, 68, 0.25);
+    color: #f87171;
+}
+
+/* ── Messages area ───────────────────────────────────────────────── */
+.buddy-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    scroll-behavior: smooth;
+}
+
+.buddy-chat-messages::-webkit-scrollbar { width: 4px; }
+.buddy-chat-messages::-webkit-scrollbar-track { background: transparent; }
+.buddy-chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(99, 179, 237, 0.2);
+    border-radius: 4px;
+}
+
+/* Empty state */
+.buddy-chat-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #4a6380;
+    font-size: 14px;
+    text-align: center;
+    padding: 24px;
+}
+
+.buddy-chat-empty-icon { font-size: 40px; opacity: 0.5; }
+
+/* Date separator */
+.buddy-chat-date-sep {
+    text-align: center;
+    color: #4a6380;
+    font-size: 11px;
+    margin: 10px 0 6px;
+}
+
+/* ── Message row ─────────────────────────────────────────────────── */
+.buddy-chat-msg-row {
+    display: flex;
+    flex-direction: column;
+    max-width: 76%;
+    gap: 4px;
+    /*
+      Extra bottom margin when there are reactions so the badge
+      doesn't overlap the next message. We always reserve it
+      since we can't know from CSS alone if reactions exist.
+      The JS conditionally renders .buddy-chat-badge, so we
+      only need padding when the badge is present. We use the
+      :has() trick where supported, and a safe fallback.
+    */
+    margin-bottom: 6px;
+}
+
+.buddy-chat-msg-row.mine   { align-self: flex-end;   align-items: flex-end; }
+.buddy-chat-msg-row.theirs { align-self: flex-start; align-items: flex-start; }
+
+/* ── Bubble wrapper — positions badge & picker relative to bubble ── */
+.buddy-chat-bubble-wrap {
+    position: relative;
+    /* bottom padding reserves space for the reaction badge */
+    padding-bottom: 0;
+}
+
+/* When a badge is present, push the wrap down so the badge
+   overlaps the bottom edge without covering the next message */
+.buddy-chat-bubble-wrap:has(.buddy-chat-badge) {
+    margin-bottom: 14px;
+}
+
+/* Fallback for browsers without :has() */
+.buddy-chat-badge-spacer { height: 14px; }
+
+/* ── Message bubble ──────────────────────────────────────────────── */
+.buddy-chat-bubble {
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-break: break-word;
+    position: relative;
+}
+
+.buddy-chat-msg-row.mine .buddy-chat-bubble {
+    background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.buddy-chat-msg-row.theirs .buddy-chat-bubble {
+    background: #1a3045;
+    color: #d4e8f8;
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(99, 179, 237, 0.12);
+}
+
+/* ── Reaction BADGE (always visible, overlaid at bubble corner) ───── */
+.buddy-chat-badge {
+    position: absolute;
+    bottom: -14px;
+    display: flex;
+    gap: 3px;
+    z-index: 2;
+}
+
+/* Badge on "mine" bubbles → right corner */
+.buddy-chat-msg-row.mine .buddy-chat-badge {
+    right: 8px;
+}
+
+/* Badge on "theirs" bubbles → left corner */
+.buddy-chat-msg-row.theirs .buddy-chat-badge {
+    left: 8px;
+}
+
+.buddy-chat-badge-btn {
+    border: none;
+    background: #12293d;
+    border-radius: 999px;
+    padding: 3px 7px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    border: 1px solid rgba(99, 179, 237, 0.15);
+    transition: transform 0.15s;
+    line-height: 1;
+    font-family: inherit;
+}
+
+.buddy-chat-badge-btn:hover {
+    transform: scale(1.15);
+}
+
+.buddy-chat-badge-btn.badge-mine {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.buddy-chat-badge-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    min-width: 10px;
+}
+
+.buddy-chat-badge-btn.badge-mine .buddy-chat-badge-count {
+    color: #93c5fd;
+}
+
+/* ── Reaction PICKER (hover-only, 5 emojis in a pill) ────────────── */
+.buddy-chat-picker {
+    position: absolute;
+    /* sit just above the bubble */
+    bottom: calc(100% + 6px);
+    background: #0d2035;
+    border: 1px solid rgba(99, 179, 237, 0.2);
+    border-radius: 999px;
+    padding: 4px 8px;
+    display: flex;
+    gap: 2px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    opacity: 0;
+    transform: translateY(6px) scale(0.9);
+    pointer-events: none;
+    /*
+      Delay hiding by 350ms so the cursor has time to travel
+      from the bubble up into the picker without it disappearing.
+      When showing (on :hover) use no delay for instant response.
+    */
+    transition: opacity 0.2s ease 0.35s, transform 0.2s ease 0.35s;
+    z-index: 10;
+    white-space: nowrap;
+}
+
+/*
+  Invisible bridge that fills the 6px gap between the picker bottom
+  and the bubble top, so the cursor never loses the hover state
+  while moving from the bubble toward the picker.
+*/
+.buddy-chat-picker::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: -8px;
+    right: -8px;
+    height: 12px; /* covers the 6px gap + a little extra */
+}
+
+/* "mine" picker anchors to right side */
+.buddy-chat-msg-row.mine .buddy-chat-picker {
+    right: 0;
+}
+
+/* "theirs" picker anchors to left side */
+.buddy-chat-msg-row.theirs .buddy-chat-picker {
+    left: 0;
+}
+
+/* Show picker on hover of the entire row — no delay on entry */
+.buddy-chat-msg-row:hover .buddy-chat-picker {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    transition: opacity 0.15s ease 0s, transform 0.15s ease 0s;
+}
+
+.buddy-chat-pick-btn {
+    border: none;
+    background: none;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, background 0.15s;
+    line-height: 1;
+    font-family: inherit;
+    padding: 0;
+}
+
+.buddy-chat-pick-btn:hover {
+    transform: scale(1.3);
+    background: rgba(255,255,255,0.08);
+}
+
+/* Highlight the emoji the current user has already reacted with */
+.buddy-chat-pick-btn.pick-active {
+    background: rgba(59, 130, 246, 0.25);
+    border-radius: 50%;
+    outline: 1.5px solid rgba(59, 130, 246, 0.5);
+}
+
+/* ── Timestamp ───────────────────────────────────────────────────── */
+.buddy-chat-time {
+    font-size: 10px;
+    color: #4a6380;
+    padding: 0 4px;
+    margin-top: 2px;
+}
+
+/* ── Input area ──────────────────────────────────────────────────── */
+.buddy-chat-input-area {
+    padding: 12px 16px 16px;
+    border-top: 1px solid rgba(99, 179, 237, 0.1);
+    background: #0b1e30;
+    flex-shrink: 0;
+}
+
+.buddy-chat-form {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.buddy-chat-input {
+    flex: 1;
+    background: #1a3045;
+    border: 1px solid rgba(99, 179, 237, 0.2);
+    border-radius: 14px;
+    padding: 10px 16px;
+    color: #e2f0ff;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    resize: none;
+    min-height: 42px;
+    max-height: 120px;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+}
+
+.buddy-chat-input::placeholder { color: #4a6380; }
+.buddy-chat-input:focus { border-color: rgba(99, 179, 237, 0.5); }
+
+.buddy-chat-send-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s, transform 0.15s;
+    flex-shrink: 0;
+}
+
+.buddy-chat-send-btn:hover:not(:disabled) { opacity: 0.9; transform: scale(1.08); }
+.buddy-chat-send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── Error ───────────────────────────────────────────────────────── */
+.buddy-chat-error {
+    text-align: center;
+    color: #f87171;
+    font-size: 12px;
+    padding: 4px 16px 8px;
+}

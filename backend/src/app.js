@@ -23,6 +23,7 @@ import galleryRoutes from "./routes/galleryRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import translateRoutes from "./routes/translateRoutes.js";
 import buddyRoutes from "./routes/buddyRoutes.js";
+import buddyChatRoutes from "./routes/buddyChatRoutes.js";
 
 
 
@@ -73,6 +74,7 @@ app.use("/api/itinerary", itineraryRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/translate", translateRoutes);
 app.use("/api/travel-buddies", buddyRoutes);
+app.use("/api/buddy-chat", buddyChatRoutes);
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 export default app;

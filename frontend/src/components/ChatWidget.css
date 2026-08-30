@@ -221,3 +221,10 @@
   background: #b7d7ef;
   cursor: not-allowed;
 }
+
+/* Hide the AI chatbot widget whenever the buddy chat panel is open */
+body.buddy-chat-open .chat-widget {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
+import BuddyChat from "../components/BuddyChat";
 
 import {
     sendTravelBuddyRequest,
@@ -24,6 +25,8 @@ export default function TravelBuddies() {
     const [searchResults, setSearchResults] = useState([]);
 
     const [loading, setLoading] = useState(false);
+
+    const [chatBuddy, setChatBuddy] = useState(null);
 
 
     async function loadData() {
@@ -504,26 +507,61 @@ export default function TravelBuddies() {
                                 <p
                                     style={{
                                         color: "#fff",
-                                        margin: 0
+                                        margin: 0,
+                                        fontWeight: "600"
                                     }}
                                 >
                                     {buddy.username}
                                 </p>
 
 
-                                <button
-                                    onClick={() =>
-                                        handleRemove(
-                                            buddy.id
-                                        )
-                                    }
-                                >
-                                    Remove
-                                </button>
+                                <div style={{ display: "flex", gap: "10px" }}>
+
+                                    <button
+                                        onClick={() => setChatBuddy(buddy)}
+                                        style={{
+                                            padding: "8px 18px",
+                                            borderRadius: "8px",
+                                            border: "none",
+                                            background: "linear-gradient(135deg, #2563eb, #0ea5e9)",
+                                            color: "#fff",
+                                            fontWeight: "700",
+                                            cursor: "pointer",
+                                            fontSize: "13px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "6px",
+                                            transition: "opacity 0.2s"
+                                        }}
+                                    >
+                                        💬 Chat
+                                    </button>
+
+                                    <button
+                                        onClick={() =>
+                                            handleRemove(
+                                                buddy.id
+                                            )
+                                        }
+                                    >
+                                        Remove
+                                    </button>
+
+                                </div>
 
                             </div>
 
                         ))
+                    }
+
+
+                    {/* BUDDY CHAT PANEL */}
+                    {
+                        chatBuddy &&
+                        <BuddyChat
+                            buddy={chatBuddy}
+                            onClose={() => setChatBuddy(null)}
+                        />
                     }
 
                 </div>
