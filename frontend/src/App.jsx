@@ -17,6 +17,9 @@ import Journal from "./pages/Journal";
 import BudgetTracker from "./pages/BudgetTracker";
 import Translate from "./pages/Translate";
 import TravelBuddies from "./pages/Buddy";
+import BookGuide from "./pages/BookGuide";
+import BookCar from "./pages/BookCar"; 
+import MyGallery from './pages/MyGallery';
 import './App.css';
 
 function App() {
@@ -40,6 +43,8 @@ function App() {
           <Route path="/journal" element={<Journal />} />
           <Route path="/budget" element={<BudgetTracker />} />
           <Route path="/translate" element={<Translate />} />
+          <Route path="/guides" element={<BookGuide />} /> 
+          <Route path="/cars" element={<BookCar />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
