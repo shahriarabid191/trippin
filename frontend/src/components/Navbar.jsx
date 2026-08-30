@@ -108,6 +108,9 @@ export default function Navbar() {
                    <button className="profile-dropdown-item" onClick={() => { navigate('/guides'); setProfileOpen(false); }}>
                       <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>tour</span> Book a Guide
                   </button> 
+                  <button className="profile-dropdown-item" onClick={() => { navigate('/cars'); setProfileOpen(false); }}>
+                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>directions_car</span> Book a Car
+                   </button> 
 
                     <button className="profile-dropdown-item" onClick={() => { navigate('/my-gallery'); setProfileOpen(false); }}>
 

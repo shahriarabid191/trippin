@@ -8,7 +8,11 @@ import {
     removeGuide,
     getMyBookings,
     bookGuide,
-    cancelBooking
+    cancelBooking,
+    getGuideReviews,
+    getAllGuideRatings,
+    createGuideReview,
+    removeGuideReview
 
 } from "../controllers/guideController.js";
 
@@ -32,6 +36,41 @@ router.get(
     authenticateUser,
     getMyBookings
 );
+
+
+// GET /api/guides/ratings/all  (must come before /:id)
+router.get(
+    "/ratings/all",
+    authenticateUser,
+    getAllGuideRatings
+);
+
+
+// GET /api/guides/:id/reviews
+router.get(
+    "/:id/reviews",
+    authenticateUser,
+    getGuideReviews
+);
+
+
+// POST /api/guides/:id/reviews
+router.post(
+    "/:id/reviews",
+    authenticateUser,
+    createGuideReview
+);
+
+
+// DELETE /api/guides/reviews/:reviewId
+router.delete(
+    "/reviews/:reviewId",
+    authenticateUser,
+    removeGuideReview
+);
+
+
+
 
 
 // GET /api/guides/:id

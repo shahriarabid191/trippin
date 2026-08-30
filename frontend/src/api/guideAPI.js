@@ -135,3 +135,68 @@ export async function cancelBooking(bookingId){
     return response.json();
 
 } 
+
+
+export async function getGuideReviews(id){
+
+    const response = await fetch(
+        `${API_URL}/${id}/reviews`,
+        {
+            credentials:"include"
+        }
+    );
+
+    return response.json();
+
+}
+
+
+
+export async function getAllGuideRatings(){
+
+    const response = await fetch(
+        `${API_URL}/ratings/all`,
+        {
+            credentials:"include"
+        }
+    );
+
+    return response.json();
+
+}
+
+
+
+export async function submitGuideReview(id,review){
+
+    const response = await fetch(
+        `${API_URL}/${id}/reviews`,
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            credentials:"include",
+            body:JSON.stringify(review)
+        }
+    );
+
+    return response.json();
+
+}
+
+
+
+export async function deleteGuideReview(reviewId){
+
+    const response = await fetch(
+        `${API_URL}/reviews/${reviewId}`,
+        {
+            method:"DELETE",
+            credentials:"include"
+        }
+    );
+
+    return response.json();
+
+} 
