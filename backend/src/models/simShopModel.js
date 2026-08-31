@@ -25,6 +25,7 @@ const toPublic = (row) => ({
     services: row.services || [],
     esimSupport: row.esim_support,
     mapLink: row.map_link,
+    submittedBy: row.submitted_by,
     createdAt: row.created_at
 });
 
@@ -100,14 +101,19 @@ export const createSubmission = async (data) => {
 // GET /api/sim-shops/mine — the caller's own submissions + their status.
 export const getSubmissionsByUser = async (userId) => {
     const result = await pool.query(
-        `SELECT id, name, district, area, status, rejection_reason, is_active,
-                created_at, reviewed_at
+        `SELECT *
            FROM sim_shops
           WHERE submitted_by = $1
           ORDER BY created_at DESC`,
         [userId]
     );
-    return result.rows;
+    return result.rows.map(row => ({
+        ...toPublic(row),
+        status: row.status,
+        rejection_reason: row.rejection_reason,
+        reviewed_at: row.reviewed_at,
+        isActive: row.is_active
+    }));
 };
 
 // DELETE /api/sim-shops/:id — a user withdraws their own submission.
@@ -117,6 +123,55 @@ export const deleteOwnSubmission = async (id, userId) => {
         [id, userId]
     );
     return result.rowCount;
+};
+
+// PUT /api/sim-shops/:id — a user updates their own submission.
+// It resets the status to 'pending' so an admin can re-approve it.
+export const updateOwnSubmission = async (id, userId, data) => {
+    let updateFields = [];
+    let values = [id, userId];
+    let idx = 3; // $1 = id, $2 = userId
+
+    const addField = (col, val) => {
+        updateFields.push(`${col} = $${idx++}`);
+        values.push(val);
+    };
+
+    addField("name", data.name);
+    addField("district", data.district);
+    addField("area", data.area);
+    addField("address", data.address);
+    addField("landmark", data.landmark || null);
+    addField("phone", data.phone);
+    addField("alt_phone", data.altPhone || null);
+    addField("email", data.email || null);
+    addField("hours", data.hours);
+    addField("established", data.established || null);
+    addField("operators", data.operators);
+    addField("services", data.services);
+    addField("esim_support", !!data.esimSupport);
+    addField("map_link", data.mapLink || null);
+
+    if (data.docStoredName) {
+        addField("doc_stored_name", data.docStoredName);
+        addField("doc_file_path", data.docFilePath);
+    }
+
+    // Force status to pending and reset review info
+    addField("status", "pending");
+    addField("rejection_reason", null);
+    addField("reviewed_by", null);
+    addField("reviewed_at", null);
+    addField("updated_at", "now()");
+
+    const result = await pool.query(
+        `UPDATE sim_shops
+            SET ${updateFields.join(", ")}
+          WHERE id = $1 AND submitted_by = $2
+          RETURNING *`,
+        values
+    );
+    return result.rows[0];
 };
 
 export { toPublic };
