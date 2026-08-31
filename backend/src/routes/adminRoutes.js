@@ -1,26 +1,48 @@
-import express from 'express';
+import express from "express";
 import {
-    getAllBookings,
-    cancelBooking,
-    getAllUsers,
-    updateHotel,
-    deleteHotel,
-} from '../controllers/adminController.js';
-import { authenticateUser, authorizeAdmin } from '../middlewares/authMiddleware.js';
+    authenticateUser,
+    authorizeAdmin,
+    authorizeModerator,
+} from "../middlewares/authMiddleware.js";
+
+import dashboardRoutes from "./admin/dashboardRoutes.js";
+import emergencyRoutes from "./admin/emergencyRoutes.js";
+import listingsRoutes from "./admin/listingsRoutes.js";
+import bookingsRoutes from "./admin/bookingsRoutes.js";
+import usersRoutes from "./admin/usersRoutes.js";
+import moderationRoutes from "./admin/moderationRoutes.js";
+import aiRoutes from "./admin/aiRoutes.js";
+
+// =====================================================================
+// /api/admin  — unified admin panel API.
+//
+// Two access tiers:
+//   authorizeModerator  →  emergency monitoring + content moderation
+//   authorizeAdmin      →  everything (dashboard, listings, bookings,
+//                          users, AI oversight)
+//
+// The frontend route guard mirrors this, but each router below is
+// independently protected here so the API is safe on its own.
+// =====================================================================
 
 const router = express.Router();
 
-router.use(authenticateUser, authorizeAdmin);
+router.use(authenticateUser);
 
-// Bookings oversight
-router.get('/bookings', getAllBookings);              // GET    /api/admin/bookings
-router.patch('/bookings/:id/cancel', cancelBooking);  // PATCH  /api/admin/bookings/:id/cancel
+// ---- Moderator + Admin ----
+router.use("/emergency", authorizeModerator, emergencyRoutes);
+router.use("/moderation", authorizeModerator, moderationRoutes);
 
-// Users list
-router.get('/users', getAllUsers);                    // GET    /api/admin/users
+// ---- Admin only ----
+router.use("/dashboard", authorizeAdmin, dashboardRoutes);
+router.use("/listings", authorizeAdmin, listingsRoutes);
+router.use("/bookings", authorizeAdmin, bookingsRoutes);
+router.use("/users", authorizeAdmin, usersRoutes);
+router.use("/ai", authorizeAdmin, aiRoutes);
 
-// Manage hotels (add lives on POST /api/hotels already)
-router.put('/hotels/:id', updateHotel);               // PUT    /api/admin/hotels/:id
-router.delete('/hotels/:id', deleteHotel);            // DELETE /api/admin/hotels/:id
+// Small identity probe the frontend guard can hit to confirm tier.
+router.get("/whoami", (req, res) => {
+    res.json({ id: req.user.id, role: req.user.role });
+});
 
 export default router;
