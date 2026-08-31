@@ -6,6 +6,7 @@ import {
     getShops,
     getMeta,
     submitShop,
+    updateShop,
     getMySubmissions,
     withdrawSubmission
 } from "../controllers/simShopController.js";
@@ -69,6 +70,15 @@ router.post(
     authenticateUser,
     upload.single("document"),
     submitShop
+);
+
+
+// PUT /api/sim-shops/:id  (update your own shop, reverts to pending)
+router.put(
+    "/:id",
+    authenticateUser,
+    upload.single("document"),
+    updateShop
 );
 
 

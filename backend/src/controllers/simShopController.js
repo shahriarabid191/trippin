@@ -134,6 +134,90 @@ export const submitShop = async (req, res) => {
     }
 };
 
+// PUT /api/sim-shops/:id (auth, multipart: fields + `document` optional PDF)
+export const updateShop = async (req, res) => {
+    try {
+        const shop = await SimShop.getShopById(req.params.id);
+        if (!shop || shop.submitted_by !== req.user.id) {
+            cleanupUpload(req.file);
+            return res.status(404).json({ message: "Submission not found" });
+        }
+
+        const b = req.body;
+
+        const parseList = (v) => {
+            if (Array.isArray(v)) return v;
+            if (typeof v === "string" && v.trim().startsWith("[")) {
+                try { return JSON.parse(v); } catch { return []; }
+            }
+            return typeof v === "string" && v ? v.split(",").map((s) => s.trim()) : [];
+        };
+
+        const operators = cleanOperators(parseList(b.operators));
+        const services = cleanServices(parseList(b.services));
+
+        const required = ["name", "district", "area", "address", "phone", "hours"];
+        const missing = required.filter((k) => !b[k] || !String(b[k]).trim());
+
+        if (missing.length) {
+            cleanupUpload(req.file);
+            return res.status(400).json({ message: `Missing required fields: ${missing.join(", ")}` });
+        }
+        if (!isValidDistrict(b.district)) {
+            cleanupUpload(req.file);
+            return res.status(400).json({ message: "Unknown district" });
+        }
+        if (operators.length === 0) {
+            cleanupUpload(req.file);
+            return res.status(400).json({ message: `Select at least one operator (${OPERATOR_KEYS.join(", ")})` });
+        }
+        if (services.length === 0) {
+            cleanupUpload(req.file);
+            return res.status(400).json({ message: "Select at least one service" });
+        }
+
+        const oldFile = req.file ? shop.doc_file_path : null;
+
+        const updatedShop = await SimShop.updateOwnSubmission(req.params.id, req.user.id, {
+            name: String(b.name).trim().slice(0, 150),
+            district: b.district,
+            area: String(b.area).trim().slice(0, 120),
+            address: String(b.address).trim(),
+            landmark: b.landmark ? String(b.landmark).trim() : null,
+            phone: String(b.phone).trim().slice(0, 40),
+            altPhone: b.altPhone ? String(b.altPhone).trim().slice(0, 40) : null,
+            email: b.email ? String(b.email).trim().slice(0, 150) : null,
+            hours: String(b.hours).trim().slice(0, 200),
+            established: b.established ? String(b.established).trim().slice(0, 10) : null,
+            operators,
+            services,
+            esimSupport: b.esimSupport === "true" || b.esimSupport === true,
+            mapLink: b.mapLink ? String(b.mapLink).trim() : null,
+            docStoredName: req.file ? req.file.filename : null,
+            docFilePath: req.file ? req.file.path : null,
+        });
+
+        if (oldFile && fs.existsSync(oldFile)) {
+            try { fs.unlinkSync(oldFile); } catch { /* ignore */ }
+        }
+
+        res.json({
+            message: "Shop updated successfully. It is now pending admin review.",
+            submission: {
+                id: updatedShop.id,
+                name: updatedShop.name,
+                district: updatedShop.district,
+                area: updatedShop.area,
+                status: updatedShop.status
+            }
+        });
+    } catch (error) {
+        console.error("Error updating SIM shop:", error);
+        cleanupUpload(req.file);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
 // GET /api/sim-shops/mine  (auth)
 export const getMySubmissions = async (req, res) => {
     try {

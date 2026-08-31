@@ -1,30 +1,11 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import { AuthContext } from '../context/AuthContext';
-import {
-  bangladeshDistricts,
-  getAreasByDistrict,
-  getShopsByArea,
-  getOperatorDetails,
-  shopsByDistrict
-} from '../data/simShopsData';
+import { getOperatorDetails } from '../data/simShopsData';
+import { getShops, getMeta, submitShop, updateShop, withdrawSubmission, getMySubmissions } from '../api/simShopAPI';
 import './SimShops.css';
 
-// ─── localStorage helpers ────────────────────────────────────────────────────
-const LS_KEY = 'trippin_sim_shops';
-
-function loadUserShops() {
-  try {
-    return JSON.parse(localStorage.getItem(LS_KEY) || '[]');
-  } catch {
-    return [];
-  }
-}
-
-function saveUserShops(shops) {
-  localStorage.setItem(LS_KEY, JSON.stringify(shops));
-}
 
 // Operator badge info
 const OPERATOR_OPTIONS = [
@@ -60,15 +41,26 @@ const EMPTY_FORM = {
 };
 
 // ─── Register Form Modal ─────────────────────────────────────────────────────
-function RegisterModal({ user, onClose, onSubmit }) {
-  const [form, setForm] = useState(EMPTY_FORM);
-  const [pdfName, setPdfName] = useState('');
+function RegisterModal({ user, meta, onClose, onSubmit, initialData }) {
+  const [form, setForm] = useState(() => {
+    if (initialData) {
+      return {
+        ...EMPTY_FORM,
+        ...initialData,
+        operators: initialData.operator || [],
+        pdfFile: null,
+      };
+    }
+    return EMPTY_FORM;
+  });
+  const [pdfFile, setPdfFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
-  // Areas for the chosen district (free-text fallback)
-  const districtAreas = form.district ? getAreasByDistrict(form.district) : [];
+  // Areas for the chosen district
+  const districtAreas = meta.geography?.[form.district]?.map(g => g.area) || [];
 
   function set(field, value) {
     setForm(f => ({ ...f, [field]: value }));
@@ -96,8 +88,8 @@ function RegisterModal({ user, onClose, onSubmit }) {
   function handlePDF(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setPdfName(file.name);
-    setForm(f => ({ ...f, pdfFile: file.name })); // store name only (no real upload)
+    setPdfFile(file);
+    setForm(f => ({ ...f, pdfFile: file.name })); // store name only for validation
   }
 
   function validate() {
@@ -110,7 +102,7 @@ function RegisterModal({ user, onClose, onSubmit }) {
     if (!form.hours.trim())     errs.hours    = 'Opening hours are required';
     if (form.operators.length === 0) errs.operators = 'Select at least one operator';
     if (form.services.length === 0)  errs.services  = 'Select at least one service';
-    if (!form.pdfFile)          errs.pdfFile  = 'Please upload your shop document (PDF)';
+    if (!form.pdfFile && !initialData)  errs.pdfFile  = 'Please upload your shop document (PDF)';
     return errs;
   }
 
@@ -120,36 +112,42 @@ function RegisterModal({ user, onClose, onSubmit }) {
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
 
     setSubmitting(true);
-    await new Promise(r => setTimeout(r, 800)); // simulate processing
+    setSubmitError(null);
 
-    const newShop = {
-      id: `user-${Date.now()}`,
-      name: form.name.trim(),
-      district: form.district,
-      area: form.area.trim(),
-      address: form.address.trim(),
-      landmark: form.landmark.trim(),
-      phone: form.phone.trim(),
-      altPhone: form.altPhone.trim() || null,
-      email: form.email.trim() || null,
-      hours: form.hours.trim(),
-      established: form.established.trim() || new Date().getFullYear().toString(),
-      operator: form.operators,
-      services: form.services,
-      esimSupport: form.esimSupport,
-      mapLink: form.mapLink.trim() || `https://maps.google.com/?q=${encodeURIComponent(form.address)}`,
-      pdfFile: form.pdfFile,
-      createdBy: user.username,
-      createdByEmail: user.email,
-      createdAt: new Date().toISOString(),
-      isUserShop: true,
-    };
+    try {
+      const fd = new FormData();
+      fd.append("name", form.name);
+      fd.append("district", form.district);
+      fd.append("area", form.area);
+      fd.append("address", form.address);
+      if (form.landmark) fd.append("landmark", form.landmark);
+      fd.append("phone", form.phone);
+      if (form.altPhone) fd.append("altPhone", form.altPhone);
+      if (form.email) fd.append("email", form.email);
+      fd.append("hours", form.hours);
+      if (form.established) fd.append("established", form.established);
+      if (form.mapLink) fd.append("mapLink", form.mapLink);
+      fd.append("esimSupport", form.esimSupport);
 
-    const existing = loadUserShops();
-    saveUserShops([...existing, newShop]);
-    setSubmitting(false);
-    setSuccess(true);
-    setTimeout(() => { onSubmit(newShop); }, 1500);
+      form.operators.forEach(o => fd.append("operators", o));
+      form.services.forEach(s => fd.append("services", s));
+      if (pdfFile) {
+        fd.append("document", pdfFile);
+      }
+
+      let res;
+      if (initialData) {
+        res = await updateShop(initialData.id, fd);
+      } else {
+        res = await submitShop(fd);
+      }
+      setSubmitting(false);
+      setSuccess(true);
+      setTimeout(() => { onSubmit(res.submission); }, 2000);
+    } catch (err) {
+      setSubmitting(false);
+      setSubmitError(err.message || "Failed to submit shop");
+    }
   }
 
   if (success) {
@@ -158,8 +156,8 @@ function RegisterModal({ user, onClose, onSubmit }) {
         <div className="sim-modal" onClick={e => e.stopPropagation()}>
           <div className="sim-modal-success">
             <span className="material-symbols-outlined sim-success-icon">check_circle</span>
-            <h3>Shop Registered!</h3>
-            <p>Your shop has been added and is now visible in the listings under <strong>{form.district} › {form.area}</strong>.</p>
+            <h3>{initialData ? 'Shop Updated!' : 'Shop Submitted!'}</h3>
+            <p>Your shop has been sent for review and will appear under <strong>{form.district} › {form.area}</strong> once approved by an admin.</p>
           </div>
         </div>
       </div>
@@ -174,8 +172,8 @@ function RegisterModal({ user, onClose, onSubmit }) {
           <div className="sim-modal-header-left">
             <span className="material-symbols-outlined">add_business</span>
             <div>
-              <h3>Register Your SIM / eSIM Shop</h3>
-              <p>Fill in your shop details and upload verification documents.</p>
+              <h3>{initialData ? 'Edit Your SIM / eSIM Shop' : 'Register Your SIM / eSIM Shop'}</h3>
+              <p>Fill in your shop details {initialData ? '' : 'and upload verification documents.'}</p>
             </div>
           </div>
           <button className="sim-modal-close" onClick={onClose} title="Close">
@@ -215,7 +213,7 @@ function RegisterModal({ user, onClose, onSubmit }) {
                   onChange={e => { set('district', e.target.value); set('area', ''); }}
                 >
                   <option value="">— Select District —</option>
-                  {bangladeshDistricts.map(d => (
+                  {meta.districts?.map(d => (
                     <option key={d} value={d}>{d}</option>
                   ))}
                 </select>
@@ -474,11 +472,11 @@ function RegisterModal({ user, onClose, onSubmit }) {
                   hidden
                 />
                 <div className="sim-pdf-inner">
-                  {pdfName ? (
+                  {form.pdfFile ? (
                     <>
                       <span className="material-symbols-outlined sim-pdf-icon-ok">description</span>
                       <div>
-                        <span className="sim-pdf-filename">{pdfName}</span>
+                        <span className="sim-pdf-filename">{form.pdfFile}</span>
                         <span className="sim-pdf-sub">Click to change file</span>
                       </div>
                     </>
@@ -497,6 +495,8 @@ function RegisterModal({ user, onClose, onSubmit }) {
             </div>
 
           </div>
+
+          {submitError && <div className="sim-field-error" style={{ padding: '0 24px' }}>{submitError}</div>}
 
           {/* Submit */}
           <div className="sim-form-footer">
@@ -532,30 +532,45 @@ export default function SimShops() {
   const [selectedArea, setSelectedArea] = useState('');
   const [expandedShop, setExpandedShop] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [userShops, setUserShops] = useState(loadUserShops);
-  const [visiblePhone, setVisiblePhone] = useState(null); // id -> show phone
+  const [editingShop, setEditingShop] = useState(null);
+  const [visiblePhone, setVisiblePhone] = useState(null);
 
-  // Combine static + user-registered shops for the selected area
-  function getShops(district, area) {
-    const staticShops = getShopsByArea(district, area);
-    const registered = userShops.filter(
-      s => s.district === district && s.area.toLowerCase() === area.toLowerCase()
-    );
-    return [...staticShops, ...registered];
-  }
+  const [meta, setMeta] = useState({ districts: [], operators: {}, services: [], geography: {} });
+  const [shops, setShops] = useState([]);
+  const [loadingShops, setLoadingShops] = useState(false);
+  const [myShops, setMyShops] = useState([]);
 
-  // All unique areas for selected district (static + registered)
-  function getAreas(district) {
-    const staticAreas = getAreasByDistrict(district);
-    const userAreas = userShops
-      .filter(s => s.district === district)
-      .map(s => s.area);
-    const merged = Array.from(new Set([...staticAreas, ...userAreas])).sort((a, b) => a.localeCompare(b));
-    return merged;
-  }
+  useEffect(() => {
+    getMeta().then(setMeta).catch(console.error);
+  }, []);
 
-  const areas = selectedDistrict ? getAreas(selectedDistrict) : [];
-  const shops = selectedDistrict && selectedArea ? getShops(selectedDistrict, selectedArea) : [];
+  const loadMyShops = () => {
+    if (user) {
+      getMySubmissions().then(setMyShops).catch(console.error);
+    } else {
+      setMyShops([]);
+    }
+  };
+
+  useEffect(() => {
+    loadMyShops();
+  }, [user]);
+
+  useEffect(() => {
+    if (selectedDistrict && selectedArea) {
+      setLoadingShops(true);
+      getShops({ district: selectedDistrict, area: selectedArea })
+        .then(setShops)
+        .catch(console.error)
+        .finally(() => setLoadingShops(false));
+    } else {
+      setShops([]);
+    }
+  }, [selectedDistrict, selectedArea]);
+
+  const areas = selectedDistrict && meta.geography[selectedDistrict] 
+    ? meta.geography[selectedDistrict].map(g => g.area) 
+    : [];
 
   function handleDistrictChange(e) {
     setSelectedDistrict(e.target.value);
@@ -568,17 +583,8 @@ export default function SimShops() {
     setExpandedShop(null);
   }
 
-  function handleDelete(shopId) {
-    const updated = userShops.filter(s => s.id !== shopId);
-    setUserShops(updated);
-    saveUserShops(updated);
-    if (expandedShop === shopId) setExpandedShop(null);
-  }
-
   function handleRegisterSubmit(newShop) {
-    setUserShops(loadUserShops());
     setShowModal(false);
-    // Auto-navigate to the new shop's district/area
     setSelectedDistrict(newShop.district);
     setSelectedArea(newShop.area);
   }
@@ -587,13 +593,37 @@ export default function SimShops() {
     setVisiblePhone(prev => prev === shopId ? null : shopId);
   }
 
+  const handleDelete = async (id, isMyList = false) => {
+    if (!window.confirm("Are you sure you want to delete this shop?")) return;
+    try {
+      await withdrawSubmission(id);
+      if (isMyList) {
+          setMyShops(prev => prev.filter(s => s.id !== id));
+      }
+      setShops(prev => prev.filter(s => s.id !== id));
+    } catch (err) {
+      alert("Failed to delete shop: " + err.message);
+    }
+  };
+
   return (
     <div className="page sim-page">
-      {showModal && user && (
+      {(showModal || editingShop) && user && (
         <RegisterModal
           user={user}
-          onClose={() => setShowModal(false)}
-          onSubmit={handleRegisterSubmit}
+          meta={meta}
+          initialData={editingShop}
+          onClose={() => { setShowModal(false); setEditingShop(null); }}
+          onSubmit={(shop) => {
+            setShowModal(false);
+            setEditingShop(null);
+            loadMyShops();
+            if (editingShop) {
+                setShops(prev => prev.filter(s => s.id !== shop.id));
+            } else {
+                handleRegisterSubmit(shop);
+            }
+          }}
         />
       )}
 
@@ -628,6 +658,55 @@ export default function SimShops() {
             </button>
           </div>
         </div>
+
+        {/* My Submissions */}
+        {user && myShops.length > 0 && (
+          <div className="sim-my-shops" style={{ padding: '0 2rem', maxWidth: '1200px', margin: '0 auto', marginBottom: '40px' }}>
+            <h3 className="sim-finder-title" style={{ marginTop: '2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="material-symbols-outlined">manage_accounts</span>
+              Manage My Shops
+            </h3>
+            <div className="sim-shop-list">
+              {myShops.map((shop) => (
+                <div key={shop.id} className="sim-shop-card" style={{ borderLeft: shop.status === 'approved' ? '4px solid #00a651' : shop.status === 'rejected' ? '4px solid #e2001a' : '4px solid #f7941d', padding: '16px' }}>
+                    <div className="sim-shop-header" style={{ cursor: 'default', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div className="sim-shop-left" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                        <div className="sim-shop-icon-wrap" style={{ background: '#f5f5f5', borderRadius: '50%', padding: '12px' }}>
+                          <span className="material-symbols-outlined">storefront</span>
+                        </div>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <h4 className="sim-shop-name" style={{ margin: 0 }}>{shop.name}</h4>
+                            <span style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 12, background: shop.status === 'approved' ? '#e6f6eb' : shop.status === 'rejected' ? '#fce6e8' : '#fef4e8', color: shop.status === 'approved' ? '#00a651' : shop.status === 'rejected' ? '#e2001a' : '#f7941d', fontWeight: 600, textTransform: 'uppercase' }}>
+                              {shop.status}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '0.85rem', color: '#666', marginTop: 4 }}>
+                            {shop.district} › {shop.area}
+                          </div>
+                          {shop.status === 'rejected' && shop.rejection_reason && (
+                              <div style={{ fontSize: '0.85rem', color: '#e2001a', marginTop: 4 }}>
+                                  Reason: {shop.rejection_reason}
+                              </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="sim-shop-right" style={{ display: 'flex', alignItems: 'center' }}>
+                        <div className="sim-shop-actions" style={{ display: 'flex', gap: 8 }}>
+                          <button className="sim-btn-icon" onClick={() => setEditingShop(shop)} title="Edit Shop" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#333' }}>
+                            <span className="material-symbols-outlined">edit</span>
+                          </button>
+                          <button className="sim-btn-icon" onClick={() => handleDelete(shop.id, true)} title="Delete Shop" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e2001a' }}>
+                            <span className="material-symbols-outlined">delete</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Info strip */}
         <div className="sim-info-strip">
@@ -673,7 +752,7 @@ export default function SimShops() {
                   onChange={handleDistrictChange}
                 >
                   <option value="">— Choose a District —</option>
-                  {bangladeshDistricts.map((district) => (
+                  {meta.districts?.map((district) => (
                     <option key={district} value={district}>{district}</option>
                   ))}
                 </select>
@@ -746,11 +825,10 @@ export default function SimShops() {
             <div className="sim-shop-list">
               {shops.map((shop) => {
                 const isExpanded = expandedShop === shop.id;
-                const isOwner = user && shop.isUserShop && shop.createdBy === user.username;
                 const phoneVisible = visiblePhone === shop.id;
 
                 return (
-                  <div key={shop.id} className={`sim-shop-card${isExpanded ? ' sim-shop-card-expanded' : ''}${shop.isUserShop ? ' sim-user-shop' : ''}`}>
+                  <div key={shop.id} className={`sim-shop-card${isExpanded ? ' sim-shop-card-expanded' : ''}`}>
 
                     {/* Card Header */}
                     <div className="sim-shop-header" onClick={() => setExpandedShop(isExpanded ? null : shop.id)}>
@@ -761,12 +839,6 @@ export default function SimShops() {
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <h4 className="sim-shop-name">{shop.name}</h4>
-                            {shop.isUserShop && (
-                              <span className="sim-user-badge">
-                                <span className="material-symbols-outlined">person</span>
-                                Community
-                              </span>
-                            )}
                           </div>
                           <div className="sim-shop-operators">
                             {shop.operator.map((op) => {
@@ -786,16 +858,7 @@ export default function SimShops() {
                         </div>
                       </div>
 
-                      <div className="sim-shop-right">
-                        {isOwner && (
-                          <button
-                            className="sim-delete-btn"
-                            title="Delete your shop listing"
-                            onClick={e => { e.stopPropagation(); handleDelete(shop.id); }}
-                          >
-                            <span className="material-symbols-outlined">delete</span>
-                          </button>
-                        )}
+                      <div className="sim-shop-right" style={{ display: 'flex', alignItems: 'center' }}>
                         <span className={`sim-expand-icon material-symbols-outlined${isExpanded ? ' rotated' : ''}`}>
                           expand_more
                         </span>
