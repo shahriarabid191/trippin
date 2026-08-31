@@ -1,11 +1,42 @@
-import express from 'express';
-import { getHotels, addHotel, getHotelById, getAvailability } from '../controllers/hotelController.js';
+import express from "express";
+
+import {
+    getHotels,
+    addHotel,
+    getHotelById,
+    getAvailability
+} from "../controllers/hotelController.js";
+
 
 const router = express.Router();
 
-router.get('/', getHotels); // Handles GET http://localhost:5050/api/hotels
-router.post('/', addHotel); // Handles POST http://localhost:5050/api/hotels
-router.get('/:id/availability', getAvailability); // GET rooms free for a date range
-router.get('/:id', getHotelById); // Handles GET http://localhost:5050/api/hotels/:id
+
+// GET /api/hotels
+router.get(
+    "/",
+    getHotels
+);
+
+
+// POST /api/hotels
+router.post(
+    "/",
+    addHotel
+);
+
+
+// GET /api/hotels/:id/availability  (rooms free for a date range — before /:id)
+router.get(
+    "/:id/availability",
+    getAvailability
+);
+
+
+// GET /api/hotels/:id
+router.get(
+    "/:id",
+    getHotelById
+);
+
 
 export default router;

@@ -13,7 +13,6 @@ import {
     getAllGuideRatings,
     createGuideReview,
     removeGuideReview
-
 } from "../controllers/guideController.js";
 
 import { authenticateUser, authorizeAdmin } from "../middlewares/authMiddleware.js";
@@ -30,7 +29,7 @@ router.get(
 );
 
 
-// GET /api/guides/bookings/mine  (my bookings)
+// GET /api/guides/bookings/mine
 router.get(
     "/bookings/mine",
     authenticateUser,
@@ -68,9 +67,6 @@ router.delete(
     authenticateUser,
     removeGuideReview
 );
-
-
-
 
 
 // GET /api/guides/:id
@@ -124,4 +120,4 @@ router.delete(
 );
 
 
-export default router; 
+export default router;

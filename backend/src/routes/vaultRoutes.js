@@ -10,34 +10,23 @@ import {
 
 import { authenticateUser } from "../middlewares/authMiddleware.js";
 
+
 const router = express.Router();
 
 
 const storage = multer.diskStorage({
-
-    destination:(req,file,cb)=>{
-        cb(null,"uploads/");
+    destination: (req, file, cb) => {
+        cb(null, "uploads/");
     },
-
-    filename:(req,file,cb)=>{
-        cb(
-            null,
-            Date.now() + "-" + file.originalname
-        );
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + "-" + file.originalname);
     }
-
 });
 
-
-const upload = multer({
-    storage
-});
+const upload = multer({ storage });
 
 
-
-// All vault routes use JWT user identity
-
-
+// GET /api/vault
 router.get(
     "/",
     authenticateUser,
@@ -45,7 +34,7 @@ router.get(
 );
 
 
-
+// POST /api/vault
 router.post(
     "/",
     authenticateUser,
@@ -54,7 +43,7 @@ router.post(
 );
 
 
-
+// DELETE /api/vault/:id
 router.delete(
     "/:id",
     authenticateUser,
@@ -62,13 +51,12 @@ router.delete(
 );
 
 
-
+// PUT /api/vault/:id
 router.put(
     "/:id",
     authenticateUser,
     renameFile
 );
-
 
 
 export default router;

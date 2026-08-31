@@ -13,8 +13,7 @@ import { authenticateUser } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 
-// Trigger SOS alert
-// POST /api/sos-alerts
+// POST /api/sos-alerts  (trigger SOS alert)
 router.post(
     "/",
     authenticateUser,
@@ -22,7 +21,6 @@ router.post(
 );
 
 
-// Get received SOS alerts
 // GET /api/sos-alerts/received
 router.get(
     "/received",
@@ -31,7 +29,6 @@ router.get(
 );
 
 
-// Get sent SOS alerts
 // GET /api/sos-alerts/sent
 router.get(
     "/sent",
@@ -40,14 +37,12 @@ router.get(
 );
 
 
-// Acknowledge received SOS alert
-// PUT /api/sos-alerts/:id/ack
+// PUT /api/sos-alerts/:id/ack  (receiver acknowledges an alert)
 router.put(
     "/:id/ack",
     authenticateUser,
     acknowledgeAlert
 );
-
 
 
 export default router;

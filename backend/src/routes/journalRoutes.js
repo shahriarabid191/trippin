@@ -6,7 +6,6 @@ import {
     createJournal,
     removeJournal,
     editJournal
-
 } from "../controllers/journalController.js";
 
 import { authenticateUser } from "../middlewares/authMiddleware.js";

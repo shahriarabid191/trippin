@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 
 import {
     fetchMessages,
@@ -6,49 +6,49 @@ import {
     reactToMessage,
     fetchUnread,
     markRead
-} from '../controllers/buddyChatController.js';
+} from "../controllers/buddyChatController.js";
 
-import { authenticateUser } from '../middlewares/authMiddleware.js';
+import { authenticateUser } from "../middlewares/authMiddleware.js";
 
 
 const router = express.Router();
 
 
-// GET  /api/buddy-chat/:buddyId/messages  — fetch conversation
+// GET /api/buddy-chat/:buddyId/messages  (fetch conversation)
 router.get(
-    '/:buddyId/messages',
+    "/:buddyId/messages",
     authenticateUser,
     fetchMessages
 );
 
 
-// POST /api/buddy-chat/:buddyId/messages  — send a message
+// POST /api/buddy-chat/:buddyId/messages  (send a message)
 router.post(
-    '/:buddyId/messages',
+    "/:buddyId/messages",
     authenticateUser,
     postMessage
 );
 
 
-// POST /api/buddy-chat/messages/:messageId/react  — toggle reaction
+// POST /api/buddy-chat/messages/:messageId/react  (toggle reaction)
 router.post(
-    '/messages/:messageId/react',
+    "/messages/:messageId/react",
     authenticateUser,
     reactToMessage
 );
 
 
-// GET /api/buddy-chat/unread  — get unread message counts grouped by sender
+// GET /api/buddy-chat/unread  (unread message counts grouped by sender)
 router.get(
-    '/unread',
+    "/unread",
     authenticateUser,
     fetchUnread
 );
 
 
-// POST /api/buddy-chat/:buddyId/read  — mark all messages from buddy as read
+// POST /api/buddy-chat/:buddyId/read  (mark all messages from buddy as read)
 router.post(
-    '/:buddyId/read',
+    "/:buddyId/read",
     authenticateUser,
     markRead
 );
