@@ -31,6 +31,7 @@ import UserDetail from './admin/pages/UserDetail';
 import ModerationGallery from './admin/pages/ModerationGallery';
 import ModerationReviews from './admin/pages/ModerationReviews';
 import ModerationJournals from './admin/pages/ModerationJournals';
+import AdminSimShops from './admin/pages/SimShops';
 import Payments from './admin/pages/Payments';
 import AiActivity from './admin/pages/AiActivity';
 
@@ -49,6 +50,7 @@ function AppShell() {
           <Route path="listings/hotels" element={<Listings kind="hotels" />} />
           <Route path="listings/guides" element={<Listings kind="guides" />} />
           <Route path="listings/cars" element={<Listings kind="cars" />} />
+          <Route path="sim-shops" element={<AdminSimShops />} />
           <Route path="bookings" element={<Bookings />} />
           <Route path="users" element={<Users />} />
           <Route path="users/:id" element={<UserDetail />} />

@@ -8,12 +8,13 @@ import "../../styles/admin.css";
 const NAV = [
     { section: null, items: [
         { to: "/admin", end: true, label: "Overview", icon: "dashboard", adminOnly: true },
-        { to: "/admin/emergency", label: "Emergency Alerts", icon: "e911_emergency", emergency: true },
+        { to: "/admin/emergency", label: "Emergency Alerts", icon: "e911_emergency", emergency: true, badge: "emergency" },
     ]},
     { section: "Marketplace", adminOnly: true, items: [
         { to: "/admin/listings/hotels", label: "Hotels", icon: "hotel" },
         { to: "/admin/listings/guides", label: "Guides", icon: "tour" },
         { to: "/admin/listings/cars", label: "Car & Ride", icon: "directions_car" },
+        { to: "/admin/sim-shops", label: "SIM / eSIM", icon: "sim_card", badge: "simShops" },
         { to: "/admin/bookings", label: "Bookings", icon: "receipt_long" },
     ]},
     { section: "Content Moderation", items: [
@@ -28,7 +29,7 @@ const NAV = [
     ]},
 ];
 
-function Sidebar({ isAdmin, emergencyCount, onExit, userLabel }) {
+function Sidebar({ isAdmin, badges, onExit, userLabel }) {
     return (
         <aside className="admin-sidebar">
             <div className="admin-brand">
@@ -47,22 +48,25 @@ function Sidebar({ isAdmin, emergencyCount, onExit, userLabel }) {
                     return (
                         <div key={gi}>
                             {group.section && <div className="admin-nav-section">{group.section}</div>}
-                            {items.map((it) => (
-                                <NavLink
-                                    key={it.to}
-                                    to={it.to}
-                                    end={it.end}
-                                    className={({ isActive }) =>
-                                        `${isActive ? "active" : ""} ${it.emergency ? "emergency-link" : ""}`
-                                    }
-                                >
-                                    <span className="material-symbols-outlined">{it.icon}</span>
-                                    {it.label}
-                                    {it.emergency && emergencyCount > 0 && (
-                                        <span className="admin-nav-badge">{emergencyCount}</span>
-                                    )}
-                                </NavLink>
-                            ))}
+                            {items.map((it) => {
+                                const count = it.badge ? badges[it.badge] || 0 : 0;
+                                return (
+                                    <NavLink
+                                        key={it.to}
+                                        to={it.to}
+                                        end={it.end}
+                                        className={({ isActive }) =>
+                                            `${isActive ? "active" : ""} ${it.emergency ? "emergency-link" : ""}`
+                                        }
+                                    >
+                                        <span className="material-symbols-outlined">{it.icon}</span>
+                                        {it.label}
+                                        {count > 0 && (
+                                            <span className={`admin-nav-badge${it.emergency ? "" : " muted"}`}>{count}</span>
+                                        )}
+                                    </NavLink>
+                                );
+                            })}
                         </div>
                     );
                 })}
@@ -85,6 +89,7 @@ const CRUMBS = {
     "/admin/listings/hotels": "Hotels",
     "/admin/listings/guides": "Guides",
     "/admin/listings/cars": "Car & Ride Services",
+    "/admin/sim-shops": "SIM / eSIM Shops",
     "/admin/bookings": "Bookings",
     "/admin/moderation/gallery": "Gallery Moderation",
     "/admin/moderation/reviews": "Review Moderation",
@@ -97,7 +102,7 @@ const CRUMBS = {
 export default function AdminLayout() {
     const { user, loading } = useContext(AuthContext);
     const location = useLocation();
-    const [emergencyCount, setEmergencyCount] = useState(0);
+    const [badges, setBadges] = useState({ emergency: 0, simShops: 0 });
 
     const role = user?.role;
     const isAdmin = role === "admin";
@@ -108,15 +113,23 @@ export default function AdminLayout() {
         if (!allowed) return;
         let active = true;
         const poll = async () => {
+            const next = {};
             try {
                 const s = await adminApi.emergencySummary();
-                if (active) setEmergencyCount((s.open || 0) + (s.acknowledged || 0));
+                next.emergency = (s.open || 0) + (s.acknowledged || 0);
             } catch { /* ignore transient */ }
+            if (isAdmin) {
+                try {
+                    const s = await adminApi.simShopsSummary();
+                    next.simShops = s.pending || 0;
+                } catch { /* ignore transient */ }
+            }
+            if (active) setBadges((b) => ({ ...b, ...next }));
         };
         poll();
         const t = setInterval(poll, 15000);
         return () => { active = false; clearInterval(t); };
-    }, [allowed]);
+    }, [allowed, isAdmin]);
 
     const crumb = useMemo(() => {
         if (location.pathname.startsWith("/admin/users/")) return "User Detail";
@@ -144,7 +157,7 @@ export default function AdminLayout() {
             <div className="admin-root">
                 <Sidebar
                     isAdmin={isAdmin}
-                    emergencyCount={emergencyCount}
+                    badges={badges}
                     userLabel={user.username || user.email}
                     onExit={() => { window.location.href = "/"; }}
                 />
@@ -155,9 +168,9 @@ export default function AdminLayout() {
                         </span>
                         <h1>{crumb}</h1>
                         <div className="admin-topbar-right">
-                            {emergencyCount > 0 && (
+                            {badges.emergency > 0 && (
                                 <NavLink to="/admin/emergency" className="pill" style={{ background: "var(--a-danger-bg)", color: "var(--a-danger)" }}>
-                                    {emergencyCount} open alert{emergencyCount === 1 ? "" : "s"}
+                                    {badges.emergency} open alert{badges.emergency === 1 ? "" : "s"}
                                 </NavLink>
                             )}
                             <span className="pill">{isAdmin ? "Administrator" : "Moderator"}</span>

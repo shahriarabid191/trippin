@@ -13,6 +13,7 @@ import bookingsRoutes from "./admin/bookingsRoutes.js";
 import usersRoutes from "./admin/usersRoutes.js";
 import moderationRoutes from "./admin/moderationRoutes.js";
 import aiRoutes from "./admin/aiRoutes.js";
+import simShopsRoutes from "./admin/simShopsRoutes.js";
 
 
 // =====================================================================
@@ -64,6 +65,13 @@ router.use(
     "/listings",
     authorizeAdmin,
     listingsRoutes
+);
+
+
+router.use(
+    "/sim-shops",
+    authorizeAdmin,
+    simShopsRoutes
 );
 
 

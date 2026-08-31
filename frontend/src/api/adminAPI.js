@@ -7,7 +7,8 @@
 // the { data, page, limit, total, totalPages } envelope from the API.
 // =====================================================================
 
-const BASE = "http://localhost:5050/api/admin";
+const API_ROOT = "http://localhost:5050/api";
+const BASE = `${API_ROOT}/admin`;
 
 class AdminApiError extends Error {
     constructor(message, status) {
@@ -89,6 +90,18 @@ export const adminApi = {
     updateCar: (id, body) => request(`/listings/cars/${id}`, { method: "PUT", body }),
     setCarActive: (id, is_active) => request(`/listings/cars/${id}/active`, { method: "PATCH", body: { is_active } }),
     deleteCar: (id) => request(`/listings/cars/${id}`, { method: "DELETE" }),
+
+    // ---- SIM / eSIM shops ----
+    simShops: (params) => request("/sim-shops", { params }),
+    simShopsSummary: () => request("/sim-shops/summary"),
+    createSimShop: (body) => request("/sim-shops", { method: "POST", body }),
+    updateSimShop: (id, body) => request(`/sim-shops/${id}`, { method: "PUT", body }),
+    approveSimShop: (id) => request(`/sim-shops/${id}/approve`, { method: "PATCH" }),
+    rejectSimShop: (id, reason) => request(`/sim-shops/${id}/reject`, { method: "PATCH", body: { reason } }),
+    setSimShopActive: (id, is_active) => request(`/sim-shops/${id}/active`, { method: "PATCH", body: { is_active } }),
+    deleteSimShop: (id) => request(`/sim-shops/${id}`, { method: "DELETE" }),
+    // Reference data (districts / operators / services) lives on the public route.
+    simShopMeta: () => fetch(`${API_ROOT}/sim-shops/meta`, { credentials: "include" }).then((r) => r.json()),
 
     // ---- Bookings ----
     bookings: (params) => request("/bookings", { params }),
