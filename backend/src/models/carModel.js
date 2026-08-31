@@ -1,9 +1,10 @@
 import db from "../config/db.js";
 
-// Get all cars (public browse list)
+// Get all cars (public browse list). Deactivated cars — toggled off
+// from the admin listings screen — are hidden from public browsing.
 export const getAllCars = async () => {
     const result = await db.query(
-        "SELECT * FROM cars ORDER BY created_at DESC"
+        "SELECT * FROM cars WHERE COALESCE(is_active, true) = true ORDER BY created_at DESC"
     );
     return result.rows;
 };

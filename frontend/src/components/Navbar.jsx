@@ -217,10 +217,10 @@ export default function Navbar() {
                 {profileOpen && (
                   <div className="profile-dropdown">
                     {/* Admin Only Link */}
-                    {user.role === 'admin' && (
+                    {(user.role === 'admin' || user.role === 'moderator') && (
                       <>
                         <button className="profile-dropdown-item" onClick={() => { navigate('/admin'); setProfileOpen(false); }}>
-                          <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px', color: '#ba1a1a' }}>admin_panel_settings</span> Admin Dashboard
+                          <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px', color: '#ba1a1a' }}>admin_panel_settings</span> {user.role === 'admin' ? 'Admin Panel' : 'Moderation'}
                         </button>
                         <div className="profile-dropdown-divider" />
                       </>

@@ -9,6 +9,7 @@ export const getHotels = async (req, res) => {
                     COUNT(r.id)::int AS review_count
              FROM hotels h
              LEFT JOIN reviews r ON r.hotel_id = h.id
+             WHERE COALESCE(h.is_active, true) = true
              GROUP BY h.id
              ORDER BY h.created_at DESC`
         );

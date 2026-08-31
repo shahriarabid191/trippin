@@ -1,9 +1,10 @@
 import db from "../config/db.js";
 
-// Get all guides (public browse list)
+// Get all guides (public browse list). Deactivated guides — toggled off
+// from the admin listings screen — are hidden from public browsing.
 export const getAllGuides = async () => {
     const result = await db.query(
-        "SELECT * FROM guides ORDER BY created_at DESC"
+        "SELECT * FROM guides WHERE COALESCE(is_active, true) = true ORDER BY created_at DESC"
     );
     return result.rows;
 };
