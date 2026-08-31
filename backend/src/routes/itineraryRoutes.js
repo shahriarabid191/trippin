@@ -8,10 +8,11 @@ import {
 
 import { authenticateUser, attachUserIfPresent } from "../middlewares/authMiddleware.js";
 
+
 const router = express.Router();
 
 
-// POST /api/itinerary/generate
+// POST /api/itinerary/generate  (works for guests and logged-in users)
 router.post(
     "/generate",
     attachUserIfPresent,

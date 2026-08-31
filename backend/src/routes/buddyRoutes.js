@@ -16,7 +16,7 @@ import { authenticateUser } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 
-// Send travel buddy request
+// POST /api/travel-buddies/request  (send travel buddy request)
 router.post(
     "/request",
     authenticateUser,
@@ -24,7 +24,7 @@ router.post(
 );
 
 
-// Get my accepted travel buddies
+// GET /api/travel-buddies  (my accepted travel buddies)
 router.get(
     "/",
     authenticateUser,
@@ -32,7 +32,7 @@ router.get(
 );
 
 
-// Get incoming travel buddy requests
+// GET /api/travel-buddies/requests  (incoming travel buddy requests)
 router.get(
     "/requests",
     authenticateUser,
@@ -40,7 +40,7 @@ router.get(
 );
 
 
-// Accept travel buddy request
+// PUT /api/travel-buddies/requests/:id/accept
 router.put(
     "/requests/:id/accept",
     authenticateUser,
@@ -48,7 +48,7 @@ router.put(
 );
 
 
-// Reject travel buddy request
+// PUT /api/travel-buddies/requests/:id/reject
 router.put(
     "/requests/:id/reject",
     authenticateUser,
@@ -56,18 +56,20 @@ router.put(
 );
 
 
-// Remove travel buddy
+// DELETE /api/travel-buddies/:id  (remove travel buddy)
 router.delete(
     "/:id",
     authenticateUser,
     deleteTravelBuddy
 );
 
-// search
+
+// GET /api/travel-buddies/search
 router.get(
     "/search",
     authenticateUser,
     searchUsers
 );
+
 
 export default router;

@@ -15,8 +15,7 @@ import { authenticateUser } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 
-// Send SOS contact request
-// POST /api/sos/request
+// POST /api/sos/request  (send SOS contact request)
 router.post(
     "/request",
     authenticateUser,
@@ -24,8 +23,7 @@ router.post(
 );
 
 
-// Get accepted SOS contacts
-// GET /api/sos/contacts
+// GET /api/sos/contacts  (accepted SOS contacts)
 router.get(
     "/contacts",
     authenticateUser,
@@ -33,8 +31,7 @@ router.get(
 );
 
 
-// Get incoming SOS requests
-// GET /api/sos/requests
+// GET /api/sos/requests  (incoming SOS requests)
 router.get(
     "/requests",
     authenticateUser,
@@ -42,7 +39,6 @@ router.get(
 );
 
 
-// Accept SOS request
 // PUT /api/sos/request/:id/accept
 router.put(
     "/request/:id/accept",
@@ -51,7 +47,6 @@ router.put(
 );
 
 
-// Reject SOS request
 // PUT /api/sos/request/:id/reject
 router.put(
     "/request/:id/reject",
@@ -60,8 +55,7 @@ router.put(
 );
 
 
-// Remove SOS contact
-// DELETE /api/sos/contact/:id
+// DELETE /api/sos/contact/:id  (remove SOS contact)
 router.delete(
     "/contact/:id",
     authenticateUser,

@@ -8,7 +8,6 @@ import {
     removeBudget,
     createExpense,
     removeExpense
-
 } from "../controllers/budgetController.js";
 
 import { authenticateUser } from "../middlewares/authMiddleware.js";
@@ -73,4 +72,4 @@ router.delete(
 );
 
 
-export default router; 
+export default router;

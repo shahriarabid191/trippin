@@ -1,17 +1,43 @@
 import express from "express";
+
 import { wrap } from "../../utils/adminQuery.js";
 import {
     getStats,
     getSignupsSeries,
     getBookingsSeries,
-    getItinerarySeries,
+    getItinerarySeries
 } from "../../controllers/admin/dashboardController.js";
+
 
 const router = express.Router();
 
-router.get("/stats", wrap(getStats));
-router.get("/charts/signups", wrap(getSignupsSeries));
-router.get("/charts/bookings", wrap(getBookingsSeries));
-router.get("/charts/itineraries", wrap(getItinerarySeries));
+
+// GET /api/admin/dashboard/stats
+router.get(
+    "/stats",
+    wrap(getStats)
+);
+
+
+// GET /api/admin/dashboard/charts/signups
+router.get(
+    "/charts/signups",
+    wrap(getSignupsSeries)
+);
+
+
+// GET /api/admin/dashboard/charts/bookings
+router.get(
+    "/charts/bookings",
+    wrap(getBookingsSeries)
+);
+
+
+// GET /api/admin/dashboard/charts/itineraries
+router.get(
+    "/charts/itineraries",
+    wrap(getItinerarySeries)
+);
+
 
 export default router;
