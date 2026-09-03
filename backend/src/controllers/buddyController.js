@@ -7,9 +7,13 @@ import {
     removeTravelBuddy
 } from "../models/buddyModel.js";
 
+import {
+    getUserByUsername,
+    searchUsersByUsername
+} from "../models/userModel.js";
 
-import { getUserByUsername } from "../models/userModel.js";
-import { searchUsersByUsername } from "../models/userModel.js";
+import { publishEvent } from "../events/eventPublisher.js";
+import { EVENT_TYPES } from "../events/eventTypes.js";
 
 
 // Send travel buddy request
@@ -49,9 +53,33 @@ export const sendTravelBuddyRequest = async (req, res) => {
         );
 
 
+        await publishEvent({
+
+            type: EVENT_TYPES.BUDDY_REQUEST_SENT,
+
+            userId: buddyUser.id,
+
+            data: {
+
+                senderId: userId,
+
+                senderUsername: req.user.username,
+
+                recipientId: buddyUser.id,
+
+                redirectTo: "/travel-buddies"
+
+            }
+
+        });
+
+
         res.status(201).json({
+
             message: "Travel buddy request sent",
+
             request
+
         });
 
 
@@ -161,9 +189,31 @@ export const acceptBuddyRequest = async (req, res) => {
         }
 
 
+        await publishEvent({
+
+            type: EVENT_TYPES.BUDDY_REQUEST_ACCEPTED,
+
+            userId: request.user_id,
+
+            data: {
+
+                accepterId: userId,
+
+                accepterUsername: req.user.username,
+
+                redirectTo: "/travel-buddies"
+
+            }
+
+        });
+
+
         res.json({
+
             message: "Travel buddy request accepted",
+
             request
+
         });
 
 
@@ -205,9 +255,31 @@ export const rejectBuddyRequest = async (req, res) => {
         }
 
 
+        await publishEvent({
+
+            type: EVENT_TYPES.BUDDY_REQUEST_REJECTED,
+
+            userId: request.user_id,
+
+            data: {
+
+                rejecterId: userId,
+
+                rejecterUsername: req.user.username,
+
+                redirectTo: "/travel-buddies"
+
+            }
+
+        });
+
+
         res.json({
+
             message: "Travel buddy request rejected",
+
             request
+
         });
 
 
@@ -250,8 +322,11 @@ export const deleteTravelBuddy = async (req, res) => {
 
 
         res.json({
+
             message: "Travel buddy removed",
+
             buddy
+
         });
 
 
@@ -268,7 +343,7 @@ export const deleteTravelBuddy = async (req, res) => {
 };
 
 
-//search
+// Search users
 export const searchUsers = async (req, res) => {
 
     try {
@@ -278,12 +353,13 @@ export const searchUsers = async (req, res) => {
             req.user.id
         );
 
+
         res.json({
             users
         });
 
-    }
-    catch (error) {
+
+    } catch (error) {
 
         console.error(error);
 
@@ -294,3 +370,4 @@ export const searchUsers = async (req, res) => {
     }
 
 };
+

@@ -8,6 +8,9 @@ import {
 
 import { getTravelBuddies } from '../models/buddyModel.js';
 
+import { publishEvent } from "../events/eventPublisher.js";
+import { EVENT_TYPES } from "../events/eventTypes.js";
+
 
 /**
  * Helper — verify that buddyId is an accepted buddy of userId.
@@ -35,7 +38,7 @@ export const fetchMessages = async (req, res) => {
 
     try {
 
-        const userId  = req.user.id;
+        const userId = req.user.id;
         const buddyId = parseInt(req.params.buddyId, 10);
 
         await assertBuddyRelationship(userId, buddyId);
@@ -69,19 +72,59 @@ export const postMessage = async (req, res) => {
 
     try {
 
-        const userId  = req.user.id;
+        const userId = req.user.id;
         const buddyId = parseInt(req.params.buddyId, 10);
         const { body } = req.body;
 
+
         if (!body || !body.trim()) {
-            return res.status(400).json({ error: 'Message body is required' });
+            return res.status(400).json({
+                error: 'Message body is required'
+            });
         }
 
-        await assertBuddyRelationship(userId, buddyId);
 
-        const message = await sendMessage(userId, buddyId, body.trim());
+        await assertBuddyRelationship(
+            userId,
+            buddyId
+        );
 
-        res.status(201).json({ message });
+
+        // 1. Save the actual message
+        const message = await sendMessage(
+            userId,
+            buddyId,
+            body.trim()
+        );
+
+
+        // 2. Publish an asynchronous event
+        await publishEvent({
+
+            type: EVENT_TYPES.CHAT_MESSAGE_SENT,
+
+            // The recipient gets the notification
+            userId: buddyId,
+
+            data: {
+                messageId: message.id,
+                senderId: userId,
+                senderUsername: req.user.username,
+                receiverId: buddyId,
+                body: message.body,
+                redirectTo: `/travel-buddies?buddyId=${userId}`
+            }
+
+
+
+        });
+
+
+        // 3. Return the created message
+        res.status(201).json({
+            message
+        });
+
 
     } catch (error) {
 
@@ -101,11 +144,10 @@ export const postMessage = async (req, res) => {
  * Toggle an emoji reaction on a message.
  * Body: { emoji: string }
  */
+
 export const reactToMessage = async (req, res) => {
-
     try {
-
-        const userId    = req.user.id;
+        const userId = req.user.id;
         const messageId = parseInt(req.params.messageId, 10);
         const { emoji } = req.body;
 
@@ -119,19 +161,35 @@ export const reactToMessage = async (req, res) => {
 
         const result = await toggleReaction(messageId, userId, emoji);
 
+        if (
+            (result.action === "added" || result.action === "changed") &&
+            result.messageOwnerId !== userId
+        ) {
+            await publishEvent({
+                type: EVENT_TYPES.CHAT_MESSAGE_REACTED,
+                userId: result.messageOwnerId,
+                data: {
+                    messageId,
+                    reactorId: userId,
+                    reactorUsername: req.user.username,
+                    emoji,
+                    action: result.action,
+                    previousEmoji: result.from || null
+                }
+            });
+        }
+
         res.json(result);
 
     } catch (error) {
-
         console.error(error);
-
         res.status(error.status || 500).json({
             error: error.message || 'Server error'
         });
-
     }
-
 };
+
+
 
 
 /**
@@ -168,7 +226,7 @@ export const markRead = async (req, res) => {
 
     try {
 
-        const userId  = req.user.id;
+        const userId = req.user.id;
         const buddyId = parseInt(req.params.buddyId, 10);
 
         await markMessagesRead(userId, buddyId);

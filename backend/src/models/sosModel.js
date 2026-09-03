@@ -1,20 +1,33 @@
 import pool from '../config/db.js';
 
+
 // Create SOS contact request
 export const createSosRequest = async (userId, contactUid) => {
+
     const result = await pool.query(
-        `INSERT INTO sos_contacts (user_id, contact_uid)
-         VALUES ($1, $2)
-         RETURNING *`,
-        [userId, contactUid]
+        `
+        INSERT INTO sos_contacts (
+            user_id,
+            contact_uid
+        )
+        VALUES ($1, $2)
+        RETURNING *
+        `,
+        [
+            userId,
+            contactUid
+        ]
     );
 
     return result.rows[0];
+
 };
 
 
-// Get all SOS contacts of a user
+
+// Get all accepted SOS contacts of a user
 export const getSosContacts = async (userId) => {
+
     const result = await pool.query(
         `
         SELECT
@@ -28,18 +41,23 @@ export const getSosContacts = async (userId) => {
         JOIN users u
             ON sc.contact_uid = u.id
         WHERE sc.user_id = $1
-        AND sc.status = 'ACCEPTED'
+          AND sc.status = 'ACCEPTED'
         ORDER BY u.username
         `,
-        [userId]
+        [
+            userId
+        ]
     );
 
     return result.rows;
+
 };
+
 
 
 // Get pending SOS requests received by a user
 export const getPendingSosRequests = async (contactUid) => {
+
     const result = await pool.query(
         `
         SELECT
@@ -53,14 +71,18 @@ export const getPendingSosRequests = async (contactUid) => {
         JOIN users u
             ON sc.user_id = u.id
         WHERE sc.contact_uid = $1
-        AND sc.status = 'PENDING'
+          AND sc.status = 'PENDING'
         ORDER BY sc.created_at DESC
         `,
-        [contactUid]
+        [
+            contactUid
+        ]
     );
 
     return result.rows;
+
 };
+
 
 
 // Accept SOS request
@@ -69,14 +91,13 @@ export const acceptSosRequest = async (
     userId
 ) => {
 
-
     const result = await pool.query(
         `
         UPDATE sos_contacts
-        SET status='ACCEPTED'
-        WHERE id=$1
-        AND contact_uid=$2
-        AND status='PENDING'
+        SET status = 'ACCEPTED'
+        WHERE id = $1
+          AND contact_uid = $2
+          AND status = 'PENDING'
         RETURNING *
         `,
         [
@@ -85,25 +106,32 @@ export const acceptSosRequest = async (
         ]
     );
 
+    const request = result.rows[0];
 
-    const request=result.rows[0];
-
-
-    if(!request)
+    if (!request) {
         return null;
+    }
 
 
-
+    /*
+     * Create the reverse accepted relationship.
+     *
+     * Original:
+     * user_id = requester
+     * contact_uid = receiver
+     *
+     * Reverse:
+     * user_id = receiver
+     * contact_uid = requester
+     */
     await pool.query(
         `
-        INSERT INTO sos_contacts
-        (
+        INSERT INTO sos_contacts (
             user_id,
             contact_uid,
             status
         )
-        VALUES
-        ($1,$2,'ACCEPTED')
+        VALUES ($1, $2, 'ACCEPTED')
         `,
         [
             request.contact_uid,
@@ -116,28 +144,89 @@ export const acceptSosRequest = async (
 
 };
 
+
+
 // Reject SOS request
-export const rejectSosRequest = async (requestId) => {
+export const rejectSosRequest = async (
+    requestId,
+    userId
+) => {
+
     const result = await pool.query(
-        `UPDATE sos_contacts
-         SET status = 'REJECTED'
-         WHERE id = $1
-         RETURNING *`,
-        [requestId]
+        `
+        UPDATE sos_contacts
+        SET status = 'REJECTED'
+        WHERE id = $1
+          AND contact_uid = $2
+          AND status = 'PENDING'
+        RETURNING *
+        `,
+        [
+            requestId,
+            userId
+        ]
     );
 
-    return result.rows[0];
+    return result.rows[0] || null;
+
 };
+
 
 
 // Remove SOS contact
-export const removeSosContact = async (id) => {
+export const removeSosContact = async (
+    id,
+    userId
+) => {
+
+    /*
+     * The relationship can be represented from
+     * either side. Make sure the authenticated user
+     * belongs to the relationship being removed.
+     */
     const result = await pool.query(
-        `DELETE FROM sos_contacts
-         WHERE id = $1
-         RETURNING *`,
-        [id]
+        `
+        DELETE FROM sos_contacts
+        WHERE id = $1
+          AND status = 'ACCEPTED'
+          AND (
+                user_id = $2
+                OR
+                contact_uid = $2
+          )
+        RETURNING *
+        `,
+        [
+            id,
+            userId
+        ]
     );
 
-    return result.rows[0];
+    const contact = result.rows[0];
+
+    if (!contact) {
+        return null;
+    }
+
+
+    /*
+     * Remove the reverse relationship too.
+     */
+    await pool.query(
+        `
+        DELETE FROM sos_contacts
+        WHERE status = 'ACCEPTED'
+          AND user_id = $1
+          AND contact_uid = $2
+        `,
+        [
+            contact.contact_uid,
+            contact.user_id
+        ]
+    );
+
+
+    return contact;
+
 };
+
