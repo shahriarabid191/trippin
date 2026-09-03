@@ -6,16 +6,18 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
+    "worker": "node src/workers/notificationWorker.js",
     "seed:sim-shops": "node database/seeds/seed_sim_shops.mjs"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bullmq": "^6.3.4",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
-    "pg": "^8.22.0"
+    "pg": "^8.23.0"
   }
 }

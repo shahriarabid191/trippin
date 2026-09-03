@@ -3,15 +3,21 @@
   "version": "1.0.0",
   "private": true,
   "description": "Trippin Application",
+
   "scripts": {
-    "dev": "concurrently \"npm --prefix backend start\" \"npm --prefix frontend run dev\"",
+    "dev": "concurrently \"npm --prefix backend start\" \"npm --prefix backend run worker\" \"npm --prefix frontend run dev\"",
+
     "backend": "npm --prefix backend start",
+    "worker": "npm --prefix backend run worker",
     "frontend": "npm --prefix frontend run dev",
+
     "build": "npm --prefix frontend run build",
     "lint": "npm --prefix frontend run lint",
     "preview": "npm --prefix frontend run preview"
   },
+
   "devDependencies": {
     "concurrently": "^9.0.0"
   }
 }
+

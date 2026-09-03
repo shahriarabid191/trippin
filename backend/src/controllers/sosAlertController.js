@@ -9,6 +9,14 @@ import {
     getSosContacts
 } from "../models/sosModel.js";
 
+import {
+    publishEvent
+} from "../events/eventPublisher.js";
+
+import {
+    EVENT_TYPES
+} from "../events/eventTypes.js";
+
 
 
 // Trigger SOS alert (3 taps / countdown trigger)
@@ -17,7 +25,7 @@ export const triggerSosAlert = async (req, res) => {
     try {
 
         const senderId = req.user.id;
-
+        const senderUsername = req.user.username;
 
         const {
             lat,
@@ -27,10 +35,8 @@ export const triggerSosAlert = async (req, res) => {
         } = req.body;
 
 
-
         // Find accepted SOS contacts
         const contacts = await getSosContacts(senderId);
-
 
 
         // User must have at least one contact
@@ -43,14 +49,11 @@ export const triggerSosAlert = async (req, res) => {
         }
 
 
-
         const alerts = [];
-
 
 
         // Create alert for every SOS contact
         for (const contact of contacts) {
-
 
             const alert = await createSosAlert(
                 senderId,
@@ -64,8 +67,37 @@ export const triggerSosAlert = async (req, res) => {
 
             alerts.push(alert);
 
-        }
 
+            // Notify each SOS contact
+            await publishEvent({
+
+                type: EVENT_TYPES.SOS_TRIGGERED,
+
+                userId: contact.contact_uid,
+
+                data: {
+
+                    senderId,
+
+                    senderUsername,
+
+                    receiverId: contact.contact_uid,
+
+                    alertId: alert.id,
+
+                    lat,
+
+                    long,
+
+                    type,
+
+                    countdownEnd
+
+                }
+
+            });
+
+        }
 
 
         res.status(201).json({
@@ -77,9 +109,7 @@ export const triggerSosAlert = async (req, res) => {
         });
 
 
-
     } catch (error) {
-
 
         console.error(error);
 
@@ -90,14 +120,9 @@ export const triggerSosAlert = async (req, res) => {
 
         });
 
-
     }
 
 };
-
-
-
-
 
 
 
@@ -105,7 +130,6 @@ export const triggerSosAlert = async (req, res) => {
 export const getMyReceivedAlerts = async (req, res) => {
 
     try {
-
 
         const receiverId = req.user.id;
 
@@ -115,7 +139,6 @@ export const getMyReceivedAlerts = async (req, res) => {
         );
 
 
-
         res.json({
 
             alerts
@@ -123,9 +146,7 @@ export const getMyReceivedAlerts = async (req, res) => {
         });
 
 
-
     } catch (error) {
-
 
         console.error(error);
 
@@ -136,14 +157,9 @@ export const getMyReceivedAlerts = async (req, res) => {
 
         });
 
-
     }
 
 };
-
-
-
-
 
 
 
@@ -151,7 +167,6 @@ export const getMyReceivedAlerts = async (req, res) => {
 export const getMySentAlerts = async (req, res) => {
 
     try {
-
 
         const senderId = req.user.id;
 
@@ -161,7 +176,6 @@ export const getMySentAlerts = async (req, res) => {
         );
 
 
-
         res.json({
 
             alerts
@@ -169,9 +183,7 @@ export const getMySentAlerts = async (req, res) => {
         });
 
 
-
     } catch (error) {
-
 
         console.error(error);
 
@@ -182,25 +194,21 @@ export const getMySentAlerts = async (req, res) => {
 
         });
 
-
     }
 
 };
 
 
 
-
-
-
-
-// Receiver acknowledges SOS alert
 // Receiver acknowledges SOS alert
 export const acknowledgeAlert = async (req, res) => {
 
     try {
 
         const { id } = req.params;
+
         const receiverId = req.user.id;
+        const receiverUsername = req.user.username;
 
 
         const alert = await acknowledgeSosAlert(
@@ -218,9 +226,37 @@ export const acknowledgeAlert = async (req, res) => {
         }
 
 
+        /*
+         * Notify the user who originally
+         * triggered the SOS.
+         */
+        await publishEvent({
+
+            type: EVENT_TYPES.SOS_ACKNOWLEDGED,
+
+            userId: alert.sender_id,
+
+            data: {
+
+                alertId: alert.id,
+
+                senderId: alert.sender_id,
+
+                acknowledgerId: receiverId,
+
+                acknowledgerUsername: receiverUsername
+
+            }
+
+        });
+
+
         res.json({
+
             message: "SOS alert acknowledged",
+
             alert
+
         });
 
 
@@ -228,14 +264,13 @@ export const acknowledgeAlert = async (req, res) => {
 
         console.error(error);
 
+
         res.status(500).json({
+
             error: "Server error"
+
         });
 
     }
 
 };
-
-
-
-

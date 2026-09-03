@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Footer from "../components/Footer";
 
+import Footer from "../components/Footer";
 import SOSButton from "../components/SOSButton";
 import CountdownSOS from "../components/CountDownSOS";
 
@@ -9,14 +9,15 @@ import {
     getSosContacts,
     getSosRequests,
     acceptSosRequest,
-    rejectSosRequest
+    rejectSosRequest,
+    removeSosContact,
+    searchSosUsers
 } from "../api/sosAPI";
+
 import "./SOS.css";
 
 
-
 export default function SOS() {
-
 
     const [username, setUsername] = useState("");
 
@@ -24,10 +25,12 @@ export default function SOS() {
 
     const [requests, setRequests] = useState([]);
 
+    const [searchResults, setSearchResults] = useState([]);
+
     const [loading, setLoading] = useState(false);
 
 
-
+    // Load SOS contacts and pending requests
     async function loadData() {
 
         try {
@@ -65,8 +68,6 @@ export default function SOS() {
     }
 
 
-
-
     useEffect(() => {
 
         loadData();
@@ -74,27 +75,74 @@ export default function SOS() {
     }, []);
 
 
+    // Search users while typing
+    async function handleSearch(value) {
+
+        setUsername(value);
 
 
+        if (!value.trim()) {
 
-    async function handleSendRequest() {
+            setSearchResults([]);
 
-
-        if (!username)
             return;
+
+        }
 
 
         try {
 
+            const data = await searchSosUsers(
+                value
+            );
 
-            await sendSosRequest(username);
+
+            setSearchResults(
+                data.users || []
+            );
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            setSearchResults([]);
+
+        }
+
+    }
 
 
-            alert("SOS request sent successfully");
+    // Send SOS contact request
+    async function handleSendRequest(
+        selectedUsername
+    ) {
+
+        if (
+            !selectedUsername ||
+            !selectedUsername.trim()
+        ) {
+            return;
+        }
+
+
+        try {
+
+            await sendSosRequest(
+                selectedUsername
+            );
+
+
+            alert(
+                "SOS contact request sent successfully"
+            );
 
 
             setUsername("");
 
+            setSearchResults([]);
+
+            loadData();
 
         }
         catch (error) {
@@ -106,54 +154,86 @@ export default function SOS() {
     }
 
 
-
-
-
+    // Accept SOS contact request
     async function handleAccept(id) {
 
+        try {
 
-        await acceptSosRequest(id);
-
-
-        alert(
-            "SOS request accepted"
-        );
+            await acceptSosRequest(id);
 
 
-        loadData();
+            alert(
+                "SOS request accepted"
+            );
+
+
+            loadData();
+
+        }
+        catch (error) {
+
+            alert(error.message);
+
+        }
 
     }
 
 
-
-
+    // Reject SOS contact request
     async function handleReject(id) {
 
+        try {
 
-        await rejectSosRequest(id);
-
-
-        alert(
-            "SOS request rejected"
-        );
+            await rejectSosRequest(id);
 
 
-        loadData();
+            alert(
+                "SOS request rejected"
+            );
+
+
+            loadData();
+
+        }
+        catch (error) {
+
+            alert(error.message);
+
+        }
 
     }
 
 
+    // Remove SOS contact
+    async function handleRemove(id) {
 
+        try {
+
+            await removeSosContact(id);
+
+
+            alert(
+                "SOS contact removed"
+            );
+
+
+            loadData();
+
+        }
+        catch (error) {
+
+            alert(error.message);
+
+        }
+
+    }
 
 
     return (
 
-
         <div className="page sos-page">
 
-
             <main className="subpage-content sos-content">
-
 
                 <h2>
                     SOS
@@ -165,8 +245,7 @@ export default function SOS() {
                 </p>
 
 
-
-
+                {/* SOS ACTIONS */}
 
                 <div
                     style={{
@@ -177,6 +256,7 @@ export default function SOS() {
                     }}
                 >
 
+                    {/* Instant SOS */}
 
                     <div
                         className="contact-card"
@@ -203,18 +283,16 @@ export default function SOS() {
 
                         <p
                             style={{
-                                color: "#fff",
+                                color: "#fff"
                             }}
                         >
                             Tap 3 times to send alert
                         </p>
 
-
                     </div>
 
 
-
-
+                    {/* Countdown SOS */}
 
                     <div
                         className="contact-card"
@@ -229,34 +307,30 @@ export default function SOS() {
 
                     </div>
 
-
                 </div>
 
 
-
-
-
+                {/* ADD SOS CONTACT */}
 
                 <div
                     className="contact-card"
                     style={{
                         width: "100%",
-                        maxWidth: "800px",
+                        maxWidth: "700px",
                         background: "#0b1e30",
                         border: "1px solid #b7d7ef",
                         marginBottom: "24px"
                     }}
                 >
 
-
                     <h3
                         style={{
-                            color: "#fff"
+                            color: "#fff",
+                            marginBottom: "24px"
                         }}
                     >
-                        Add SOS Contact
+                        Search SOS Contact
                     </h3>
-
 
 
                     <input
@@ -264,57 +338,123 @@ export default function SOS() {
                         placeholder="Search username"
                         value={username}
                         onChange={(e) =>
-                            setUsername(e.target.value)
+                            handleSearch(
+                                e.target.value
+                            )
                         }
                         style={{
                             padding: "12px",
-                            width: "70%",
+                            width: "100%",
                             borderRadius: "8px",
                             border: "1px solid #4f5c69",
                             background: "#1b2f42",
-                            color: "#fff",
-                            marginRight: "12px"
+                            color: "#fff"
                         }}
                     />
 
 
+                    {/* SEARCH RESULTS */}
 
-                    <button
-                        onClick={handleSendRequest}
-                        style={{
-                            padding: "12px 24px",
-                            borderRadius: "8px",
-                            border: "none",
-                            background: "#fff",
-                            color: "#0b1e30",
-                            fontWeight: "bold",
-                            cursor: "pointer"
-                        }}
-                    >
-                        Send Request
-                    </button>
+                    {
+                        searchResults.length > 0 && (
 
+                            <div
+                                style={{
+                                    marginTop: "12px",
+                                    width: "100%"
+                                }}
+                            >
+
+                                {
+                                    searchResults.map(user => (
+
+                                        <div
+                                            key={user.id}
+                                            style={{
+                                                padding: "12px",
+                                                marginBottom: "8px",
+                                                background: "#1b2f42",
+                                                borderRadius: "8px",
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center"
+                                            }}
+                                        >
+
+                                            <span
+                                                style={{
+                                                    color: "#fff"
+                                                }}
+                                            >
+                                                {user.username}
+                                            </span>
+
+
+                                            <button
+                                                onClick={() =>
+                                                    handleSendRequest(
+                                                        user.username
+                                                    )
+                                                }
+                                                style={{
+                                                    padding: "8px 16px",
+                                                    borderRadius: "8px",
+                                                    border: "none",
+                                                    background: "#fff",
+                                                    color: "#0b1e30",
+                                                    fontWeight: "bold",
+                                                    cursor: "pointer"
+                                                }}
+                                            >
+                                                Add
+                                            </button>
+
+                                        </div>
+
+                                    ))
+                                }
+
+                            </div>
+
+                        )
+                    }
+
+
+                    {
+                        username.trim() &&
+                        searchResults.length === 0 && (
+
+                            <p
+                                style={{
+                                    color: "#b7d7ef",
+                                    marginTop: "12px"
+                                }}
+                            >
+                                No users found.
+                            </p>
+
+                        )
+                    }
 
                 </div>
 
 
-
-
-
-
-
                 {
-                    loading &&
+                    loading && (
 
-                    <p>
-                        Loading...
-                    </p>
+                        <p
+                            style={{
+                                color: "#fff"
+                            }}
+                        >
+                            Loading...
+                        </p>
 
+                    )
                 }
 
 
-
-
+                {/* SOS REQUESTS + CONTACTS */}
 
                 <div
                     style={{
@@ -323,19 +463,27 @@ export default function SOS() {
                     }}
                 >
 
-
-
+                    {/* PENDING REQUESTS */}
 
                     <h3>
                         Pending Requests
                     </h3>
 
 
+                    {
+                        requests.length === 0 &&
+                        !loading && (
+
+                            <p>
+                                No pending requests
+                            </p>
+
+                        )
+                    }
 
 
                     {
                         requests.map(request => (
-
 
                             <div
                                 key={request.id}
@@ -350,16 +498,20 @@ export default function SOS() {
                                 }}
                             >
 
-
                                 <p
                                     style={{
                                         color: "#fff",
                                         margin: 0
                                     }}
                                 >
-                                    <strong>{request.username}</strong> sent you an SOS contact request
-                                </p>
 
+                                    <strong>
+                                        {request.username}
+                                    </strong>
+
+                                    {" sent you an SOS contact request"}
+
+                                </p>
 
 
                                 <div
@@ -371,7 +523,9 @@ export default function SOS() {
 
                                     <button
                                         onClick={() =>
-                                            handleAccept(request.id)
+                                            handleAccept(
+                                                request.id
+                                            )
                                         }
                                     >
                                         Accept
@@ -380,24 +534,23 @@ export default function SOS() {
 
                                     <button
                                         onClick={() =>
-                                            handleReject(request.id)
+                                            handleReject(
+                                                request.id
+                                            )
                                         }
                                     >
                                         Reject
                                     </button>
 
-
                                 </div>
 
-
                             </div>
-
 
                         ))
                     }
 
 
-
+                    {/* MY SOS CONTACTS */}
 
                     <h3
                         style={{
@@ -408,12 +561,20 @@ export default function SOS() {
                     </h3>
 
 
+                    {
+                        contacts.length === 0 &&
+                        !loading && (
 
+                            <p>
+                                You don't have any SOS contacts yet
+                            </p>
+
+                        )
+                    }
 
 
                     {
                         contacts.map(contact => (
-
 
                             <div
                                 key={contact.id}
@@ -421,39 +582,49 @@ export default function SOS() {
                                     padding: "16px",
                                     marginBottom: "12px",
                                     background: "#1b2f42",
-                                    borderRadius: "8px"
+                                    borderRadius: "8px",
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
                                 }}
                             >
 
                                 <p
                                     style={{
                                         color: "#fff",
-                                        margin: 0
+                                        margin: 0,
+                                        fontWeight: "600"
                                     }}
                                 >
                                     {contact.username}
                                 </p>
 
 
-                            </div>
+                                <button
+                                    onClick={() =>
+                                        handleRemove(
+                                            contact.id
+                                        )
+                                    }
+                                >
+                                    Remove
+                                </button>
 
+                            </div>
 
                         ))
                     }
 
-
-
                 </div>
 
-
-
             </main>
+
 
             <Footer />
 
         </div>
 
-
     );
 
 }
+

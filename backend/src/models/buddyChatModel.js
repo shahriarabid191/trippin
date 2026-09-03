@@ -68,60 +68,109 @@ export const getMessages = async (userId, buddyId) => {
  */
 export const toggleReaction = async (messageId, userId, emoji) => {
 
+    // Get the message owner
+    const messageResult = await pool.query(
+        `
+        SELECT sender_id
+        FROM buddy_messages
+        WHERE id = $1
+        `,
+        [messageId]
+    );
+
+
+    if (messageResult.rows.length === 0) {
+
+        const error = new Error("Message not found");
+        error.status = 404;
+        throw error;
+
+    }
+
+
+    const messageOwnerId = messageResult.rows[0].sender_id;
+
+
     // Get any existing reaction this user has on this message
     const existing = await pool.query(
         `
-        SELECT id, emoji FROM buddy_message_reactions
+        SELECT id, emoji
+        FROM buddy_message_reactions
         WHERE message_id = $1
-          AND user_id    = $2
+          AND user_id = $2
         `,
         [messageId, userId]
     );
+
 
     if (existing.rows.length > 0) {
 
         const prevEmoji = existing.rows[0].emoji;
 
-        // Always remove the existing reaction first
+
         await pool.query(
             `
             DELETE FROM buddy_message_reactions
             WHERE message_id = $1
-              AND user_id    = $2
+              AND user_id = $2
             `,
             [messageId, userId]
         );
 
-        // Same emoji → just remove (toggle off)
+
+        // Same emoji → remove reaction
         if (prevEmoji === emoji) {
-            return { action: 'removed' };
+
+            return {
+                action: "removed",
+                messageOwnerId
+            };
+
         }
 
-        // Different emoji → add the new one (swap)
+
+        // Different emoji → replace reaction
         await pool.query(
             `
-            INSERT INTO buddy_message_reactions (message_id, user_id, emoji)
+            INSERT INTO buddy_message_reactions (
+                message_id,
+                user_id,
+                emoji
+            )
             VALUES ($1, $2, $3)
             `,
             [messageId, userId, emoji]
         );
 
-        return { action: 'changed', from: prevEmoji, to: emoji };
 
-    } else {
-
-        // No existing reaction → add it
-        await pool.query(
-            `
-            INSERT INTO buddy_message_reactions (message_id, user_id, emoji)
-            VALUES ($1, $2, $3)
-            `,
-            [messageId, userId, emoji]
-        );
-
-        return { action: 'added' };
+        return {
+            action: "changed",
+            from: prevEmoji,
+            to: emoji,
+            messageOwnerId
+        };
 
     }
+
+
+    // No existing reaction → add
+    await pool.query(
+        `
+        INSERT INTO buddy_message_reactions (
+            message_id,
+            user_id,
+            emoji
+        )
+        VALUES ($1, $2, $3)
+        `,
+        [messageId, userId, emoji]
+    );
+
+
+    return {
+        action: "added",
+        messageOwnerId
+    };
 
 };
 

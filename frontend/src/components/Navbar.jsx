@@ -2,24 +2,26 @@ import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
-import NotificationDropdown from "./NotificationDropdown";
-import { getReceivedAlerts } from "../api/sosAlertAPI";
-import { getUnreadChatMessages } from "../api/buddyChatAPI";
-
+import NotificationDropdown from './NotificationDropdown';
+import { getUnreadNotificationCount } from '../api/notificationAPI';
 
 export default function Navbar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [alertCount, setAlertCount] = useState(0);
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const [chatNotifs, setChatNotifs] = useState([]);
+
   const profileRef = useRef(null);
   const notificationRef = useRef(null);
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Pull the current user and logout function from Context
   const { user, logout } = useContext(AuthContext);
 
+  /*
+   * Close profile / notification dropdowns
+   * when clicking outside them.
+   */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -37,51 +39,47 @@ export default function Navbar() {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
-
+  /*
+   * Load unread notification count
+   * from the NEW notification system.
+   */
   const loadAlertCount = async () => {
-
     try {
-
-      const [sosData, chatData] = await Promise.all([
-        getReceivedAlerts().catch(() => ({ alerts: [] })),
-        getUnreadChatMessages().catch(() => [])
-      ]);
-
-      const sosAlerts = sosData.alerts || sosData || [];
-      const unreadSOS = sosAlerts.filter(a => !a.acked).length;
-
-      setChatNotifs(chatData);
-      const totalChatUnread = chatData.reduce((sum, n) => sum + n.unread_count, 0);
-
-      setAlertCount(unreadSOS + totalChatUnread);
-
+      const count = await getUnreadNotificationCount();
+      setAlertCount(count);
     } catch (error) {
-
-      console.error('Failed to load alert count', error);
-
+      console.error(
+        'Failed to load notification count',
+        error
+      );
     }
-
   };
 
-
+  /*
+   * Initial notification count + periodic refresh.
+   */
   useEffect(() => {
+    if (!user) {
+      setAlertCount(0);
+      return;
+    }
 
     loadAlertCount();
 
-    // Poll for new chat messages every 10 seconds
-    const interval = setInterval(loadAlertCount, 10000);
+    const interval = setInterval(
+      loadAlertCount,
+      10000
+    );
+
     return () => clearInterval(interval);
-
-  }, []);
-
-
+  }, [user]);
 
   const navLinks = [
     { path: '/booking', label: 'Booking' },
@@ -95,25 +93,51 @@ export default function Navbar() {
   const isHome = location.pathname === '/';
   const [scrolled, setScrolled] = useState(false);
 
+  /*
+   * Home-page scroll behaviour.
+   */
   useEffect(() => {
     if (!isHome) {
       setScrolled(false);
       return;
     }
 
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 60);
+    };
+
     onScroll();
+
     window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
   }, [isHome]);
 
   return (
-    <header className={isHome ? `home-navbar${scrolled ? ' home-navbar-scrolled' : ''}` : 'subpage-header'}>
+    <header
+      className={
+        isHome
+          ? `home-navbar${scrolled
+            ? ' home-navbar-scrolled'
+            : ''
+          }`
+          : 'subpage-header'
+      }
+    >
       <nav className="top-nav">
-        <div className="brand" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
+
+        {/* Brand */}
+        <div
+          className="brand"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/')}
+        >
           ◉ TRIPPIN
         </div>
 
+        {/* Navigation links */}
         <div className="menu-links">
           {navLinks.map((link) => (
             <a
@@ -123,47 +147,86 @@ export default function Navbar() {
                 e.preventDefault();
                 navigate(link.path);
               }}
-              className={location.pathname === link.path ? 'active' : ''}
+              className={
+                location.pathname === link.path
+                  ? 'active'
+                  : ''
+              }
             >
               {link.label}
             </a>
           ))}
         </div>
 
-        <div className="nav-icons" style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          {/* Conditional Rendering: Logged In vs Logged Out */}
+        {/* Right-side navigation */}
+        <div
+          className="nav-icons"
+          style={{
+            display: 'flex',
+            gap: '16px',
+            alignItems: 'center'
+          }}
+        >
+
+          {/* Logged out */}
           {!user ? (
             <>
               <button
                 onClick={() => navigate('/login')}
-                style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '15px' }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: '15px'
+                }}
               >
                 Login
               </button>
+
               <button
                 onClick={() => navigate('/signup')}
-                style={{ background: '#fff', color: '#0b1e30', border: 'none', padding: '8px 20px', borderRadius: '999px', cursor: 'pointer', fontWeight: 700, fontSize: '14px' }}
+                style={{
+                  background: '#fff',
+                  color: '#0b1e30',
+                  border: 'none',
+                  padding: '8px 20px',
+                  borderRadius: '999px',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontSize: '14px'
+                }}
               >
                 Sign Up
               </button>
             </>
           ) : (
-            <>
 
-              <span style={{ color: '#fff', fontWeight: 600 }}>
+            /* Logged in */
+            <>
+              <span
+                style={{
+                  color: '#fff',
+                  fontWeight: 600
+                }}
+              >
                 Hi, {user.username}
               </span>
 
+              {/* Notification */}
               <div
-                style={{ position: "relative" }}
+                style={{ position: 'relative' }}
                 ref={notificationRef}
               >
-
                 <button
                   className="nav-icon-btn"
                   title="Notifications"
                   onClick={() => {
-                    setNotificationOpen(prev => !prev);
+                    setNotificationOpen(
+                      prev => !prev
+                    );
+
                     loadAlertCount();
                   }}
                 >
@@ -174,18 +237,18 @@ export default function Navbar() {
                   {alertCount > 0 && (
                     <span
                       style={{
-                        position: "absolute",
-                        top: "-5px",
-                        right: "-5px",
-                        background: "red",
-                        color: "white",
-                        width: "18px",
-                        height: "18px",
-                        borderRadius: "50%",
-                        fontSize: "12px",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center"
+                        position: 'absolute',
+                        top: '-5px',
+                        right: '-5px',
+                        background: 'red',
+                        color: 'white',
+                        width: '18px',
+                        height: '18px',
+                        borderRadius: '50%',
+                        fontSize: '12px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                       }}
                     >
                       {alertCount}
@@ -193,86 +256,288 @@ export default function Navbar() {
                   )}
                 </button>
 
-
                 {notificationOpen && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "45px",
-                      right: "0",
-                      zIndex: 9999
-                    }}
-                  >
-                  <NotificationDropdown refreshCount={loadAlertCount} chatNotifs={chatNotifs} />
-                  </div>
+                  <NotificationDropdown
+                    refreshCount={loadAlertCount}
+                  />
                 )}
-
               </div>
 
-              <div style={{ position: 'relative' }} ref={profileRef}>
-                <button className="nav-icon-btn" title="Profile" onClick={() => setProfileOpen(o => !o)}>
-                  <span className="material-symbols-outlined">account_circle</span>
+              {/* Profile */}
+              <div
+                style={{ position: 'relative' }}
+                ref={profileRef}
+              >
+                <button
+                  className="nav-icon-btn"
+                  title="Profile"
+                  onClick={() =>
+                    setProfileOpen(
+                      open => !open
+                    )
+                  }
+                >
+                  <span className="material-symbols-outlined">
+                    account_circle
+                  </span>
                 </button>
 
                 {profileOpen && (
                   <div className="profile-dropdown">
-                    {/* Admin Only Link */}
-                    {(user.role === 'admin' || user.role === 'moderator') && (
-                      <>
-                        <button className="profile-dropdown-item" onClick={() => { navigate('/admin'); setProfileOpen(false); }}>
-                          <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px', color: '#ba1a1a' }}>admin_panel_settings</span> {user.role === 'admin' ? 'Admin Panel' : 'Moderation'}
-                        </button>
-                        <div className="profile-dropdown-divider" />
-                      </>
-                    )}
-                    <button className="profile-dropdown-item" onClick={() => { navigate('/sos'); setProfileOpen(false); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px', color: '#d32f2f' }}>emergency</span> SOS
-                    </button>
-                    <button className="profile-dropdown-item" onClick={() => { navigate('/todos'); setProfileOpen(false); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>checklist</span> My Todo List
+
+                    {/* Admin / Moderator */}
+                    {(user.role === 'admin' ||
+                      user.role === 'moderator') && (
+                        <>
+                          <button
+                            className="profile-dropdown-item"
+                            onClick={() => {
+                              navigate('/admin');
+                              setProfileOpen(false);
+                            }}
+                          >
+                            <span
+                              className="material-symbols-outlined pd-icon"
+                              style={{
+                                fontSize: '20px',
+                                marginRight: '8px',
+                                color: '#ba1a1a'
+                              }}
+                            >
+                              admin_panel_settings
+                            </span>
+
+                            {user.role === 'admin'
+                              ? 'Admin Panel'
+                              : 'Moderation'}
+                          </button>
+
+                          <div className="profile-dropdown-divider" />
+                        </>
+                      )}
+
+                    {/* SOS */}
+                    <button
+                      className="profile-dropdown-item"
+                      onClick={() => {
+                        navigate('/sos');
+                        setProfileOpen(false);
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined pd-icon"
+                        style={{
+                          fontSize: '20px',
+                          marginRight: '8px',
+                          color: '#d32f2f'
+                        }}
+                      >
+                        emergency
+                      </span>
+
+                      SOS
                     </button>
 
-                    <button className="profile-dropdown-item" onClick={() => { navigate('/vault'); setProfileOpen(false); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>lock</span> My Vault
-                    </button>
-                    <button className="profile-dropdown-item" onClick={() => { navigate('/budget'); setProfileOpen(false); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>account_balance_wallet</span> My Budget
-                    </button>
-                    <button className="profile-dropdown-item" onClick={() => { navigate('/journal'); setProfileOpen(false); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>menu_book</span> My Journal
+                    {/* Todo */}
+                    <button
+                      className="profile-dropdown-item"
+                      onClick={() => {
+                        navigate('/todos');
+                        setProfileOpen(false);
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined pd-icon"
+                        style={{
+                          fontSize: '20px',
+                          marginRight: '8px'
+                        }}
+                      >
+                        checklist
+                      </span>
+
+                      My Todo List
                     </button>
 
-                   <button className="profile-dropdown-item" onClick={() => { navigate('/guides'); setProfileOpen(false); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>tour</span> Book a Guide
-                  </button> 
-                  <button className="profile-dropdown-item" onClick={() => { navigate('/cars'); setProfileOpen(false); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>directions_car</span> Book a Car
-                   </button> 
+                    {/* Vault */}
+                    <button
+                      className="profile-dropdown-item"
+                      onClick={() => {
+                        navigate('/vault');
+                        setProfileOpen(false);
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined pd-icon"
+                        style={{
+                          fontSize: '20px',
+                          marginRight: '8px'
+                        }}
+                      >
+                        lock
+                      </span>
 
-                    <button className="profile-dropdown-item" onClick={() => { navigate('/my-gallery'); setProfileOpen(false); }}>
-
-                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>image</span> My Gallery
+                      My Vault
                     </button>
 
-                    <button className="profile-dropdown-item" onClick={() => { navigate('/travel-buddies'); setProfileOpen(false); }}>
-                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px' }}>group</span> Travel Buddies
+                    {/* Budget */}
+                    <button
+                      className="profile-dropdown-item"
+                      onClick={() => {
+                        navigate('/budget');
+                        setProfileOpen(false);
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined pd-icon"
+                        style={{
+                          fontSize: '20px',
+                          marginRight: '8px'
+                        }}
+                      >
+                        account_balance_wallet
+                      </span>
+
+                      My Budget
+                    </button>
+
+                    {/* Journal */}
+                    <button
+                      className="profile-dropdown-item"
+                      onClick={() => {
+                        navigate('/journal');
+                        setProfileOpen(false);
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined pd-icon"
+                        style={{
+                          fontSize: '20px',
+                          marginRight: '8px'
+                        }}
+                      >
+                        menu_book
+                      </span>
+
+                      My Journal
+                    </button>
+
+                    {/* Guides */}
+                    <button
+                      className="profile-dropdown-item"
+                      onClick={() => {
+                        navigate('/guides');
+                        setProfileOpen(false);
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined pd-icon"
+                        style={{
+                          fontSize: '20px',
+                          marginRight: '8px'
+                        }}
+                      >
+                        tour
+                      </span>
+
+                      Book a Guide
+                    </button>
+
+                    {/* Cars */}
+                    <button
+                      className="profile-dropdown-item"
+                      onClick={() => {
+                        navigate('/cars');
+                        setProfileOpen(false);
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined pd-icon"
+                        style={{
+                          fontSize: '20px',
+                          marginRight: '8px'
+                        }}
+                      >
+                        directions_car
+                      </span>
+
+                      Book a Car
+                    </button>
+
+                    {/* Gallery */}
+                    <button
+                      className="profile-dropdown-item"
+                      onClick={() => {
+                        navigate('/my-gallery');
+                        setProfileOpen(false);
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined pd-icon"
+                        style={{
+                          fontSize: '20px',
+                          marginRight: '8px'
+                        }}
+                      >
+                        image
+                      </span>
+
+                      My Gallery
+                    </button>
+
+                    {/* Travel Buddies */}
+                    <button
+                      className="profile-dropdown-item"
+                      onClick={() => {
+                        navigate('/travel-buddies');
+                        setProfileOpen(false);
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined pd-icon"
+                        style={{
+                          fontSize: '20px',
+                          marginRight: '8px'
+                        }}
+                      >
+                        group
+                      </span>
+
+                      Travel Buddies
                     </button>
 
                     <div className="profile-dropdown-divider" />
 
-                    <button className="profile-dropdown-item" onClick={async () => {
-                      await logout();
-                      setProfileOpen(false);
-                      navigate('/');
-                    }}>
-                      <span className="material-symbols-outlined pd-icon" style={{ fontSize: '20px', marginRight: '8px', color: '#4f5c69' }}>logout</span> Logout
+                    {/* Logout */}
+                    <button
+                      className="profile-dropdown-item"
+                      onClick={async () => {
+                        await logout();
+                        setProfileOpen(false);
+                        navigate('/');
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined pd-icon"
+                        style={{
+                          fontSize: '20px',
+                          marginRight: '8px',
+                          color: '#4f5c69'
+                        }}
+                      >
+                        logout
+                      </span>
+
+                      Logout
                     </button>
+
                   </div>
                 )}
               </div>
             </>
           )}
         </div>
+
       </nav>
     </header>
   );

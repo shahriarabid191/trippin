@@ -33,7 +33,7 @@ export const authenticateUser = async (req, res, next) => {
         try {
 
             const { rows } = await pool.query(
-                "SELECT role, suspended_at FROM users WHERE id = $1",
+                "SELECT username, role, suspended_at FROM users WHERE id = $1",
                 [decoded.id]
             );
 
@@ -47,6 +47,7 @@ export const authenticateUser = async (req, res, next) => {
                     });
                 }
 
+                req.user.username = account.username;
                 req.user.role = account.role;
             }
 

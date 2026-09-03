@@ -25,7 +25,7 @@ import translateRoutes from "./routes/translateRoutes.js";
 import buddyRoutes from "./routes/buddyRoutes.js";
 import buddyChatRoutes from "./routes/buddyChatRoutes.js";
 import simShopRoutes from "./routes/simShopRoutes.js";
-
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 
 const app = express();
@@ -77,6 +77,7 @@ app.use("/api/translate", translateRoutes);
 app.use("/api/travel-buddies", buddyRoutes);
 app.use("/api/buddy-chat", buddyChatRoutes);
 app.use("/api/sim-shops", simShopRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 export default app;

@@ -6,16 +6,20 @@ import {
     getSosRequests,
     acceptRequest,
     rejectRequest,
-    deleteSosContact
+    deleteSosContact,
+    searchUsers
 } from "../controllers/sosController.js";
 
-import { authenticateUser } from "../middlewares/authMiddleware.js";
+import {
+    authenticateUser
+} from "../middlewares/authMiddleware.js";
 
 
 const router = express.Router();
 
 
-// POST /api/sos/request  (send SOS contact request)
+// POST /api/sos/request
+// Send SOS contact request
 router.post(
     "/request",
     authenticateUser,
@@ -23,7 +27,8 @@ router.post(
 );
 
 
-// GET /api/sos/contacts  (accepted SOS contacts)
+// GET /api/sos/contacts
+// Get accepted SOS contacts
 router.get(
     "/contacts",
     authenticateUser,
@@ -31,7 +36,8 @@ router.get(
 );
 
 
-// GET /api/sos/requests  (incoming SOS requests)
+// GET /api/sos/requests
+// Get incoming SOS contact requests
 router.get(
     "/requests",
     authenticateUser,
@@ -39,7 +45,17 @@ router.get(
 );
 
 
+// GET /api/sos/search?username=...
+// Search users for SOS contact
+router.get(
+    "/search",
+    authenticateUser,
+    searchUsers
+);
+
+
 // PUT /api/sos/request/:id/accept
+// Accept SOS contact request
 router.put(
     "/request/:id/accept",
     authenticateUser,
@@ -48,6 +64,7 @@ router.put(
 
 
 // PUT /api/sos/request/:id/reject
+// Reject SOS contact request
 router.put(
     "/request/:id/reject",
     authenticateUser,
@@ -55,12 +72,14 @@ router.put(
 );
 
 
-// DELETE /api/sos/contact/:id  (remove SOS contact)
+// DELETE /api/sos/contacts/:id
+// Remove SOS contact
 router.delete(
-    "/contact/:id",
+    "/contacts/:id",
     authenticateUser,
     deleteSosContact
 );
 
 
 export default router;
+
