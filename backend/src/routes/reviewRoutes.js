@@ -2,7 +2,9 @@ import express from "express";
 
 import {
     getReviewsByHotel,
+    getReviewById,
     addReview,
+    deleteReview,
     getFeaturedReviews
 } from "../controllers/reviewController.js";
 
@@ -20,7 +22,14 @@ router.get(
 );
 
 
-// GET /api/reviews/:hotelId  (public — anyone can read reviews)
+// GET /api/reviews/single/:id  (public — retrieve specific review by ID)
+router.get(
+    "/single/:id",
+    getReviewById
+);
+
+
+// GET /api/reviews/:hotelId  (public — anyone can read reviews for a hotel)
 router.get(
     "/:hotelId",
     getReviewsByHotel
@@ -32,6 +41,14 @@ router.post(
     "/",
     authenticateUser,
     addReview
+);
+
+
+// DELETE /api/reviews/:id  (only logged-in users can delete)
+router.delete(
+    "/:id",
+    authenticateUser,
+    deleteReview
 );
 
 

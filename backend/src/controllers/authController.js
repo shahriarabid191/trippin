@@ -49,8 +49,15 @@ export const loginUser = async (req, res) => {
         // 3. Issue JWT via HTTP-Only cookie
         issueAuthCookie(res, user);
 
+        const token = jwt.sign(
+            { id: user.id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
+
         res.status(200).json({
             message: 'Logged in successfully',
+            token,
             user: {
                 id: user.id,
                 email: user.email,
@@ -92,8 +99,15 @@ export const registerUser = async (req, res) => {
         // 5. Issue JWT Cookie so they are instantly logged in
         issueAuthCookie(res, user);
 
+        const token = jwt.sign(
+            { id: user.id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
+
         res.status(201).json({
             message: 'User registered',
+            token,
             user: {
                 id: user.id,
                 email: user.email,

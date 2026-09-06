@@ -6,8 +6,8 @@ export const authenticateUser = async (req, res, next) => {
 
     try {
 
-        const token = req.cookies.token;
-
+        const authHeader = req.headers.authorization;
+        const token = req.cookies?.token || (authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : authHeader);
 
         if (!token) {
             return res.status(401).json({
@@ -74,7 +74,8 @@ export const authenticateUser = async (req, res, next) => {
 // blocks the request — lets both guests and logged-in users hit a route.
 export const attachUserIfPresent = (req, res, next) => {
 
-    const token = req.cookies.token;
+    const authHeader = req.headers.authorization;
+    const token = req.cookies?.token || (authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : authHeader);
 
     if (!token) {
         return next();
