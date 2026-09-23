@@ -6,12 +6,74 @@ on:
   workflow_dispatch:
 
 jobs:
-  ping:
+  crud:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Ping Supabase Database
+      - name: CRUD test on Supabase todos
         run: |
-          curl -f -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/todos?select=id&limit=1" \
-            -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}"
+          set -e
+
+          BASE_URL="${{ secrets.SUPABASE_URL }}/rest/v1/todos"
+          API_KEY="${{ secrets.SUPABASE_KEY }}"
+          USER_ID=20
+
+          echo "===== CREATE ====="
+
+          CREATE_RESPONSE=$(curl -sS -f -X POST "$BASE_URL" \
+            -H "apikey: $API_KEY" \
+            -H "Authorization: Bearer $API_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d "{
+              \"title\": \"Supabase Keep Alive Test\",
+              \"user_id\": $USER_ID
+            }")
+
+          echo "$CREATE_RESPONSE"
+
+          TODO_ID=$(echo "$CREATE_RESPONSE" | jq -r '.[0].id')
+
+          if [ -z "$TODO_ID" ] || [ "$TODO_ID" = "null" ]; then
+            echo "Failed to create todo"
+            exit 1
+          fi
+
+          echo "Created Todo ID: $TODO_ID"
+
+
+          echo "===== READ ====="
+
+          curl -sS -f -X GET \
+            "$BASE_URL?user_id=eq.$USER_ID&select=*" \
+            -H "apikey: $API_KEY" \
+            -H "Authorization: Bearer $API_KEY"
+
+          echo ""
+
+
+          echo "===== UPDATE ====="
+
+          UPDATE_RESPONSE=$(curl -sS -f -X PATCH \
+            "$BASE_URL?id=eq.$TODO_ID&user_id=eq.$USER_ID" \
+            -H "apikey: $API_KEY" \
+            -H "Authorization: Bearer $API_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d '{
+              "title": "Supabase Keep Alive Test - Updated",
+              "completed": true
+            }')
+
+          echo "$UPDATE_RESPONSE"
+
+
+          echo "===== DELETE ====="
+
+          curl -sS -f -X DELETE \
+            "$BASE_URL?id=eq.$TODO_ID&user_id=eq.$USER_ID" \
+            -H "apikey: $API_KEY" \
+            -H "Authorization: Bearer $API_KEY"
+
+          echo ""
+          echo "===== CRUD TEST COMPLETED SUCCESSFULLY ====="
